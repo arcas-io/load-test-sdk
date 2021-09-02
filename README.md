@@ -22,3 +22,9 @@ This project currently assumes the server is running on `[::]:50051`.
 ```shell
 yarn test:watch
 ```
+## Example
+To run the example script, which matches the API in the user story:
+
+```shell
+yarn build && node examples/index.mjs
+```
