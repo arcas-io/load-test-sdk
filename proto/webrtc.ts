@@ -11,6 +11,9 @@ export interface ProtoGrpcType {
   webrtc: {
     CreateSessionRequest: MessageTypeDefinition
     CreateSessionResponse: MessageTypeDefinition
+    Empty: MessageTypeDefinition
+    StartSessionRequest: MessageTypeDefinition
+    StopSessionRequest: MessageTypeDefinition
     WebRtc: SubtypeConstructor<typeof grpc.Client, _webrtc_WebRtcClient> & { service: _webrtc_WebRtcDefinition }
   }
 }

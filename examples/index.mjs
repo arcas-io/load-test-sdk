@@ -1,6 +1,14 @@
-import { createSession } from './../build/src/main.js';
+import {
+  createSession,
+  startSession,
+  stopSession,
+} from './../build/src/main.js';
 
-// Create a session with the load testing service
-const session = createSession({ name: 'First Session' }).then((session) =>
-  console.log('session created: ', session),
-);
+let session = await createSession({ name: 'First Session' });
+console.log('session created: ', session);
+
+await startSession(session);
+console.log('session started: ', session);
+
+await stopSession(session);
+console.log('session stopped: ', session);
