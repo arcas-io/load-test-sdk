@@ -1,6 +1,9 @@
 import { promisify } from 'util';
 import { client } from './client';
 
+type CreateSessionOptions = {
+  name: string;
+};
 export class Session {
   id: string;
   name: string;
@@ -9,43 +12,33 @@ export class Session {
     this.id = id;
     this.name = name;
   }
-}
 
-type CreateSessionOptions = {
-  name: string;
-};
+  /**
+   * Create a new session
+   * @param {CreateSessionOptions} options - The { name } of the session (mostly for debugging).
+   * @returns {Promise<Session>}
+   */
+  static async create(options: CreateSessionOptions): Promise<Session> {
+    const createSession = promisify(client.createSession).bind(client);
+    const response = await createSession(options);
+    return new Session(response.session_id, options.name);
+  }
 
-/**
- * Returns the newly created session
- * @param {CreateSessionOptions} options - The name of the session (mostly for debugging).
- * @returns {Promise<string>}
- */
-export async function createSession(
-  options: CreateSessionOptions,
-): Promise<Session> {
-  const createSession = promisify(client.createSession).bind(client);
-  const response = await createSession(options);
-  const session = new Session(response.session_id, options.name);
+  /**
+   * Start a session/test
+   * @returns {Promise<void>}
+   */
+  async start(): Promise<void> {
+    const startSession = promisify(client.startSession).bind(client);
+    return await startSession({ session_id: this.id });
+  }
 
-  return session;
-}
-
-/**
- * Start a session/test
- * @param {Session} session
- * @returns {Promise<string>}
- */
-export async function startSession(session: Session): Promise<void> {
-  const startSession = promisify(client.startSession).bind(client);
-  return await startSession({ session_id: session.id });
-}
-
-/**
- * Stop a session/test
- * @param {Session} session
- * @returns {Promise<string>}
- */
-export async function stopSession(session: Session): Promise<void> {
-  const stopSession = promisify(client.stopSession).bind(client);
-  return await stopSession({ session_id: session.id });
+  /**
+   * Stop a session/test
+   * @returns {Promise<void>}
+   */
+  async stop(): Promise<void> {
+    const stopSession = promisify(client.stopSession).bind(client);
+    return await stopSession({ session_id: this.id });
+  }
 }

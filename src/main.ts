@@ -1,2 +1,2 @@
 // Base API
-export { createSession, startSession, stopSession } from './session';
+export { Session } from './session';
