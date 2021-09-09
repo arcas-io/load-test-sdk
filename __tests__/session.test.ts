@@ -1,6 +1,7 @@
 import { Session } from '../src/session';
 
 const SESSION_NAME = 'From Node SDK';
+const PEER_CONNECTION_NAME = 'PC from Node SDK';
 
 async function newSession(): Promise<Session> {
   return await Session.create({ name: SESSION_NAME });
@@ -34,5 +35,15 @@ describe('Session.getStats function', () => {
     const session = await newSession();
     await session.start();
     await expect(session.getStats()).resolves.not.toThrow();
+  });
+});
+
+describe('Session.createPeerConnection function', () => {
+  it('stops a session', async () => {
+    const session = await newSession();
+    await session.start();
+    await expect(
+      session.createPeerConnection({ name: PEER_CONNECTION_NAME }),
+    ).resolves.not.toThrow();
   });
 });
