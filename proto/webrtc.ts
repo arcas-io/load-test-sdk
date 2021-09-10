@@ -8,10 +8,18 @@ type SubtypeConstructor<Constructor extends new (...args: any) => any, Subtype> 
 };
 
 export interface ProtoGrpcType {
+  google: {
+    protobuf: {
+      Timestamp: MessageTypeDefinition
+    }
+  }
   webrtc: {
     CreateSessionRequest: MessageTypeDefinition
     CreateSessionResponse: MessageTypeDefinition
     Empty: MessageTypeDefinition
+    GetStatsRequest: MessageTypeDefinition
+    GetStatsResponse: MessageTypeDefinition
+    SessionStats: MessageTypeDefinition
     StartSessionRequest: MessageTypeDefinition
     StopSessionRequest: MessageTypeDefinition
     WebRtc: SubtypeConstructor<typeof grpc.Client, _webrtc_WebRtcClient> & { service: _webrtc_WebRtcDefinition }

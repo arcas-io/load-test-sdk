@@ -5,6 +5,8 @@ import type { MethodDefinition } from '@grpc/proto-loader'
 import type { CreateSessionRequest as _webrtc_CreateSessionRequest, CreateSessionRequest__Output as _webrtc_CreateSessionRequest__Output } from '../webrtc/CreateSessionRequest';
 import type { CreateSessionResponse as _webrtc_CreateSessionResponse, CreateSessionResponse__Output as _webrtc_CreateSessionResponse__Output } from '../webrtc/CreateSessionResponse';
 import type { Empty as _webrtc_Empty, Empty__Output as _webrtc_Empty__Output } from '../webrtc/Empty';
+import type { GetStatsRequest as _webrtc_GetStatsRequest, GetStatsRequest__Output as _webrtc_GetStatsRequest__Output } from '../webrtc/GetStatsRequest';
+import type { GetStatsResponse as _webrtc_GetStatsResponse, GetStatsResponse__Output as _webrtc_GetStatsResponse__Output } from '../webrtc/GetStatsResponse';
 import type { StartSessionRequest as _webrtc_StartSessionRequest, StartSessionRequest__Output as _webrtc_StartSessionRequest__Output } from '../webrtc/StartSessionRequest';
 import type { StopSessionRequest as _webrtc_StopSessionRequest, StopSessionRequest__Output as _webrtc_StopSessionRequest__Output } from '../webrtc/StopSessionRequest';
 
@@ -17,6 +19,15 @@ export interface WebRtcClient extends grpc.Client {
   createSession(argument: _webrtc_CreateSessionRequest, metadata: grpc.Metadata, callback: (error?: grpc.ServiceError, result?: _webrtc_CreateSessionResponse__Output) => void): grpc.ClientUnaryCall;
   createSession(argument: _webrtc_CreateSessionRequest, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_CreateSessionResponse__Output) => void): grpc.ClientUnaryCall;
   createSession(argument: _webrtc_CreateSessionRequest, callback: (error?: grpc.ServiceError, result?: _webrtc_CreateSessionResponse__Output) => void): grpc.ClientUnaryCall;
+  
+  GetStats(argument: _webrtc_GetStatsRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_GetStatsResponse__Output) => void): grpc.ClientUnaryCall;
+  GetStats(argument: _webrtc_GetStatsRequest, metadata: grpc.Metadata, callback: (error?: grpc.ServiceError, result?: _webrtc_GetStatsResponse__Output) => void): grpc.ClientUnaryCall;
+  GetStats(argument: _webrtc_GetStatsRequest, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_GetStatsResponse__Output) => void): grpc.ClientUnaryCall;
+  GetStats(argument: _webrtc_GetStatsRequest, callback: (error?: grpc.ServiceError, result?: _webrtc_GetStatsResponse__Output) => void): grpc.ClientUnaryCall;
+  getStats(argument: _webrtc_GetStatsRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_GetStatsResponse__Output) => void): grpc.ClientUnaryCall;
+  getStats(argument: _webrtc_GetStatsRequest, metadata: grpc.Metadata, callback: (error?: grpc.ServiceError, result?: _webrtc_GetStatsResponse__Output) => void): grpc.ClientUnaryCall;
+  getStats(argument: _webrtc_GetStatsRequest, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_GetStatsResponse__Output) => void): grpc.ClientUnaryCall;
+  getStats(argument: _webrtc_GetStatsRequest, callback: (error?: grpc.ServiceError, result?: _webrtc_GetStatsResponse__Output) => void): grpc.ClientUnaryCall;
   
   StartSession(argument: _webrtc_StartSessionRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_Empty__Output) => void): grpc.ClientUnaryCall;
   StartSession(argument: _webrtc_StartSessionRequest, metadata: grpc.Metadata, callback: (error?: grpc.ServiceError, result?: _webrtc_Empty__Output) => void): grpc.ClientUnaryCall;
@@ -41,6 +52,8 @@ export interface WebRtcClient extends grpc.Client {
 export interface WebRtcHandlers extends grpc.UntypedServiceImplementation {
   CreateSession: grpc.handleUnaryCall<_webrtc_CreateSessionRequest__Output, _webrtc_CreateSessionResponse>;
   
+  GetStats: grpc.handleUnaryCall<_webrtc_GetStatsRequest__Output, _webrtc_GetStatsResponse>;
+  
   StartSession: grpc.handleUnaryCall<_webrtc_StartSessionRequest__Output, _webrtc_Empty>;
   
   StopSession: grpc.handleUnaryCall<_webrtc_StopSessionRequest__Output, _webrtc_Empty>;
@@ -49,6 +62,7 @@ export interface WebRtcHandlers extends grpc.UntypedServiceImplementation {
 
 export interface WebRtcDefinition extends grpc.ServiceDefinition {
   CreateSession: MethodDefinition<_webrtc_CreateSessionRequest, _webrtc_CreateSessionResponse, _webrtc_CreateSessionRequest__Output, _webrtc_CreateSessionResponse__Output>
+  GetStats: MethodDefinition<_webrtc_GetStatsRequest, _webrtc_GetStatsResponse, _webrtc_GetStatsRequest__Output, _webrtc_GetStatsResponse__Output>
   StartSession: MethodDefinition<_webrtc_StartSessionRequest, _webrtc_Empty, _webrtc_StartSessionRequest__Output, _webrtc_Empty__Output>
   StopSession: MethodDefinition<_webrtc_StopSessionRequest, _webrtc_Empty, _webrtc_StopSessionRequest__Output, _webrtc_Empty__Output>
 }

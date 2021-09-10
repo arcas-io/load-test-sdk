@@ -41,4 +41,13 @@ export class Session {
     const stopSession = promisify(client.stopSession).bind(client);
     return await stopSession({ session_id: this.id });
   }
+
+  /**
+   * Gets the current stats for a session/test
+   * @returns {Promise<void>}
+   */
+  async getStats(): Promise<void> {
+    const getStats = promisify(client.getStats).bind(client);
+    return await getStats({ session_id: this.id });
+  }
 }

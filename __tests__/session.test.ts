@@ -24,6 +24,15 @@ describe('Session.start function', () => {
 describe('Session.stop function', () => {
   it('stops a session', async () => {
     const session = await newSession();
+    await session.start();
     await expect(session.stop()).resolves.not.toThrow();
+  });
+});
+
+describe('Session.getStats function', () => {
+  it('stops a session', async () => {
+    const session = await newSession();
+    await session.start();
+    await expect(session.getStats()).resolves.not.toThrow();
   });
 });
