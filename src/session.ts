@@ -4,6 +4,11 @@ import { client } from './client';
 type CreateSessionOptions = {
   name: string;
 };
+
+type CreatePeerConnectionOptions = {
+  name: string;
+};
+
 export class Session {
   id: string;
   name: string;
@@ -49,5 +54,18 @@ export class Session {
   async getStats(): Promise<void> {
     const getStats = promisify(client.getStats).bind(client);
     return await getStats({ session_id: this.id });
+  }
+
+  /**
+   * Gets the current stats for a session/test
+   * @returns {Promise<void>}
+   */
+  async createPeerConnection(
+    options: CreatePeerConnectionOptions,
+  ): Promise<void> {
+    const createPeerConnection = promisify(client.createPeerConnection).bind(
+      client,
+    );
+    return await createPeerConnection({ session_id: this.id, ...options });
   }
 }

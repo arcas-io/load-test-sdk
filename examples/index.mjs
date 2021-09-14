@@ -10,6 +10,10 @@ console.log('session created: ', session);
 await session.start();
 console.log('session started: ', session);
 
+const peerConnectionName = 'First Peer Connection';
+await session.createPeerConnection({ name: peerConnectionName });
+console.log('new peer connection: ', peerConnectionName);
+
 const interval = setInterval(async () => {
   TEST_COUNTER_MS += STATS_INCREMENTS_MS;
 
@@ -22,18 +26,3 @@ const interval = setInterval(async () => {
   const stats = await session.getStats();
   console.log('stats: ', stats);
 }, STATS_INCREMENTS_MS);
-
-// import {
-//   createSession,
-//   startSession,
-//   stopSession,
-// } from './../build/src/main.js';
-
-// let session = await createSession({ name: 'First Session' });
-// console.log('session created: ', session);
-
-// await startSession(session);
-// console.log('session started: ', session);
-
-// await stopSession(session);
-// console.log('session stopped: ', session);
