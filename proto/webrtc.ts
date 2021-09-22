@@ -21,6 +21,8 @@ export interface ProtoGrpcType {
     Empty: MessageTypeDefinition
     GetStatsRequest: MessageTypeDefinition
     GetStatsResponse: MessageTypeDefinition
+    PeerConnectionStat: MessageTypeDefinition
+    PeerConnectionStats: MessageTypeDefinition
     SessionStats: MessageTypeDefinition
     StartSessionRequest: MessageTypeDefinition
     StopSessionRequest: MessageTypeDefinition
