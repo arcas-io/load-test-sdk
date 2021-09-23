@@ -19,11 +19,19 @@ const interval = setInterval(async () => {
   if (TEST_COUNTER_MS >= TEST_TIME_MS) {
     clearInterval(interval);
     await session.stop();
-    console.log('session stopped: ', session);
   }
 
+  console.clear();
   const stats = await session.getStats();
-  console.log('stats: ', JSON.stringify(stats, null, 4));
+  console.log('\n\nSESSION STATS');
+  console.table([stats.session]);
+
+  console.log('\nPEER CONNECTION STATS');
+  let tables = [];
+  stats.peer_connections.forEach((peer_connection) => {
+    console.log(peer_connection.name);
+    console.table(peer_connection.video_sender[0]);
+  });
 }, STATS_INCREMENTS_MS);
 
 async function newPeerConnection(session, name) {
