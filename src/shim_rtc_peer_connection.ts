@@ -3,7 +3,7 @@
 
 // import { Session, CreatePeerConnectionOptions } from './session';
 
-class RTCPeerConnection extends EventTarget {
+class ShimRTCPeerConnection extends EventTarget {
   readonly canTrickleIceCandidates: boolean | null;
   readonly connectionState: RTCPeerConnectionState;
   readonly currentLocalDescription: RTCSessionDescription | null;
@@ -32,38 +32,38 @@ class RTCPeerConnection extends EventTarget {
   onnegotiationneeded: ((this: RTCPeerConnection, ev: Event) => any) | null;
   onsignalingstatechange: ((this: RTCPeerConnection, ev: Event) => any) | null;
   ontrack: ((this: RTCPeerConnection, ev: RTCTrackEvent) => any) | null;
-  readonly peerIdentity: Promise<RTCIdentityAssertion>;
+  readonly peerIdentity: Promise<any>;
   readonly pendingLocalDescription: RTCSessionDescription | null;
   readonly pendingRemoteDescription: RTCSessionDescription | null;
   readonly remoteDescription: RTCSessionDescription | null;
-  readonly sctp: RTCSctpTransport | null;
+  readonly sctp: any;
   readonly signalingState: RTCSignalingState;
 
-  constructor(configuration: RTCConfiguration) {
+  constructor(_configuration: RTCConfiguration) {
     super();
     // const options: CreatePeerConnectionOptions = { name };
     // this.session.createPeerConnection(options);
   }
 
   static generateCertificate(
-    keygenAlgorithm: AlgorithmIdentifier,
+    _keygenAlgorithm: AlgorithmIdentifier,
   ): Promise<RTCCertificate> {
     throw new Error('todo');
   }
 
   addIceCandidate(
-    candidate: RTCIceCandidateInit | RTCIceCandidate,
+    _candidate: RTCIceCandidateInit | RTCIceCandidate,
   ): Promise<void> {
     throw new Error('todo');
   }
 
-  addTrack(track: MediaStreamTrack, ...streams: MediaStream[]): RTCRtpSender {
+  addTrack(_track: MediaStreamTrack, ..._streams: MediaStream[]): RTCRtpSender {
     throw new Error('todo');
   }
 
   addTransceiver(
-    trackOrKind: MediaStreamTrack | string,
-    init?: RTCRtpTransceiverInit,
+    _trackOrKind: MediaStreamTrack | string,
+    _init?: RTCRtpTransceiverInit,
   ): RTCRtpTransceiver {
     throw new Error('todo');
   }
@@ -72,18 +72,20 @@ class RTCPeerConnection extends EventTarget {
     throw new Error('todo');
   }
 
-  createAnswer(options?: RTCOfferOptions): Promise<RTCSessionDescriptionInit> {
+  createAnswer(_options?: RTCOfferOptions): Promise<RTCSessionDescriptionInit> {
     throw new Error('todo');
   }
 
   createDataChannel(
-    label: string,
-    dataChannelDict?: RTCDataChannelInit,
+    _label: string,
+    _dataChannelDict?: RTCDataChannelInit,
   ): RTCDataChannel {
     throw new Error('todo');
   }
 
-  createOffer(options?: RTCOfferOptions): Promise<RTCSessionDescriptionInit> {
+  createOffer(
+    _options?: RTCOfferAnswerOptions,
+  ): Promise<RTCSessionDescriptionInit> {
     throw new Error('todo');
   }
 
@@ -103,7 +105,7 @@ class RTCPeerConnection extends EventTarget {
     throw new Error('todo');
   }
 
-  getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport> {
+  getStats(_selector?: MediaStreamTrack | null): Promise<RTCStatsReport> {
     throw new Error('todo');
   }
 
@@ -111,7 +113,7 @@ class RTCPeerConnection extends EventTarget {
     throw new Error('todo');
   }
 
-  removeTrack(sender: RTCRtpSender): void {
+  removeTrack(_sender: RTCRtpSender): void {
     throw new Error('todo');
   }
 
@@ -119,43 +121,40 @@ class RTCPeerConnection extends EventTarget {
     throw new Error('todo');
   }
 
-  setConfiguration(configuration?: RTCConfiguration): void {
+  setConfiguration(_configuration?: RTCConfiguration): void {
     throw new Error('todo');
   }
 
-  setIdentityProvider(
-    provider: string,
-    options?: RTCIdentityProviderOptions,
-  ): void {
+  setIdentityProvider(_provider: string, _options?: any): void {
     throw new Error('todo');
   }
 
-  setLocalDescription(description?: RTCSessionDescriptionInit): Promise<void> {
+  setLocalDescription(_description?: RTCSessionDescriptionInit): Promise<void> {
     throw new Error('todo');
   }
 
-  setRemoteDescription(description: RTCSessionDescriptionInit): Promise<void> {
+  setRemoteDescription(_description: RTCSessionDescriptionInit): Promise<void> {
     throw new Error('todo');
   }
 
   addEventListener<K extends keyof RTCPeerConnectionEventMap>(
-    type: K,
-    listener: (
+    _type: K,
+    _listener: (
       this: RTCPeerConnection,
       ev: RTCPeerConnectionEventMap[K],
     ) => any,
-    options?: boolean | AddEventListenerOptions,
+    _options?: boolean | AddEventListenerOptions,
   ): void {
     throw new Error('todo');
   }
 
   removeEventListener<K extends keyof RTCPeerConnectionEventMap>(
-    type: K,
-    listener: (
+    _type: K,
+    _listener: (
       this: RTCPeerConnection,
       ev: RTCPeerConnectionEventMap[K],
     ) => any,
-    options?: boolean | EventListenerOptions,
+    _options?: boolean | EventListenerOptions,
   ): void {
     throw new Error('todo');
   }
@@ -163,7 +162,7 @@ class RTCPeerConnection extends EventTarget {
 
 export function setup() {
   // detect the right kind of global object
-  global.RTCPeerConnection = RTCPeerConnection;
+  global.RTCPeerConnection = ShimRTCPeerConnection;
 }
 
 // add navigator shim and expose the user-agent string that is appropritate for us.

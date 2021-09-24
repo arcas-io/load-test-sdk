@@ -17,6 +17,7 @@
     "noImplicitAny": false,
     "noImplicitThis": false,
     "strictNullChecks": false,
+    "lib": ["es6", "dom"],
   },
   "include": [
     "src/**/*",
