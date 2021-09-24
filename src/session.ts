@@ -5,7 +5,7 @@ type CreateSessionOptions = {
   name: string;
 };
 
-type CreatePeerConnectionOptions = {
+export type CreatePeerConnectionOptions = {
   name: string;
 };
 
