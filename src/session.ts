@@ -10,13 +10,7 @@ type CreatePeerConnectionOptions = {
 };
 
 export class Session {
-  id: string;
-  name: string;
-
-  constructor(id: string, name: string) {
-    this.id = id;
-    this.name = name;
-  }
+  constructor(public id: string, public name: string) {}
 
   /**
    * Create a new session
