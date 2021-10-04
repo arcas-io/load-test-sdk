@@ -7,7 +7,7 @@ import { io } from 'socket.io-client';
 let device;
 let stream;
 
-export function provider(uri) {
+export async function provider(uri) {
   // connect to the SFU
   const socket = io(uri, {
     secure: true,
