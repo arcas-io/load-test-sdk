@@ -1,5 +1,6 @@
 import { promisify } from 'util';
 import { client } from './client';
+import { CreatePeerConnectionResponse } from './../proto/webrtc/CreatePeerConnectionResponse';
 
 type CreateSessionOptions = {
   name: string;
@@ -7,6 +8,12 @@ type CreateSessionOptions = {
 
 export type CreatePeerConnectionOptions = {
   name: string;
+};
+
+export type OfferAnswerOptions = {
+  peer_connection_id: string;
+  sdp_type: string;
+  sdp: string;
 };
 
 export class Session {
@@ -52,14 +59,36 @@ export class Session {
 
   /**
    * Gets the current stats for a session/test
-   * @returns {Promise<void>}
+   * @returns {Promise<CreatePeerConnectionResponse>}
    */
   async createPeerConnection(
     options: CreatePeerConnectionOptions,
-  ): Promise<void> {
+  ): Promise<CreatePeerConnectionResponse> {
     const createPeerConnection = promisify(client.createPeerConnection).bind(
       client,
     );
     return await createPeerConnection({ session_id: this.id, ...options });
+  }
+
+  /**
+   * Gets the current stats for a session/test
+   * @returns {Promise<void>}
+   */
+  async setLocalDescription(options: OfferAnswerOptions): Promise<void> {
+    const setLocalDescription = promisify(client.setLocalDescription).bind(
+      client,
+    );
+    return await setLocalDescription({ session_id: this.id, ...options });
+  }
+
+  /**
+   * Gets the current stats for a session/test
+   * @returns {Promise<void>}
+   */
+  async setRemoteDescription(options: OfferAnswerOptions): Promise<void> {
+    const setRemoteDescription = promisify(client.setRemoteDescription).bind(
+      client,
+    );
+    return await setRemoteDescription({ session_id: this.id, ...options });
   }
 }

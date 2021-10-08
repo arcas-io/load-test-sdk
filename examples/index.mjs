@@ -7,11 +7,14 @@ let TEST_COUNTER_MS = 0;
 const STATS_INCREMENTS_MS = 1000;
 const SOCKET_URI = 'https://127.0.0.1:3000';
 
-// register a callback to be invoked when setting the remote description
+// register a callback to be invoked when setting the local and remote descriptions
+// TODO: move this into the SDK
+const setLocalDescription = (sdp) => console.log(sdp);
 const setRemoteDescription = (sdp) => console.log(sdp);
 
 // pull in mocked DOM WebRTC calls
-setup(setRemoteDescription);
+// TODO: move this into the SDK
+setup(setLocalDescription, setRemoteDescription);
 
 // interact with a provider (e.g. mediasoup) for signaling
 await provider(SOCKET_URI);

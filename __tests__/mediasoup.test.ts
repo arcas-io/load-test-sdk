@@ -1,8 +1,10 @@
 import { setup } from '../src/shim_rtc_peer_connection';
+import { provider } from './../build/src/mediasoup.js';
 import { Device } from 'mediasoup-client';
 
-const rtcPeerConnection = global.RTCPeerConnection;
+// TODO: mock mediasoup server
 
+const SOCKET_URI = 'https://127.0.0.1:3000';
 const routerRtpCapabilities = {
   codecs: [
     {
@@ -25,13 +27,19 @@ const routerRtpCapabilities = {
   ],
 };
 
-describe('media soup works', () => {
+const setLocalDescription = (sdp) => console.log(sdp);
+const setRemoteDescription = (sdp) => console.log(sdp);
+let initialGlobal: any = global;
+
+describe.skip('media soup works', () => {
   beforeEach(async () => {
-    setup();
+    initialGlobal = global;
+    setup(setLocalDescription, setRemoteDescription);
+    await provider(SOCKET_URI);
   });
 
   afterEach(async () => {
-    global.RTCPeerConnection = rtcPeerConnection;
+    global = initialGlobal;
   });
 
   it('allows normal API to work', async () => {

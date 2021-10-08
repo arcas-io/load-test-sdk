@@ -19,6 +19,7 @@ A gRPC server will need to be running to run tests.
 This project currently assumes the server is running on `[::]:50051`.
 
 ## TDD
+To run all tests while developing:
 ```shell
 yarn test:watch
 ```
