@@ -2,15 +2,7 @@ import { promisify } from 'util';
 import { client } from './client';
 import { CreatePeerConnectionResponse } from './../proto/webrtc/CreatePeerConnectionResponse';
 
-type CreateSessionOptions = {
-  name: string;
-};
-
-export type CreatePeerConnectionOptions = {
-  name: string;
-};
-
-export type OfferAnswerOptions = {
+export type PeerConnectionSdp = {
   peer_connection_id: string;
   sdp_type: string;
   sdp: string;
@@ -24,7 +16,7 @@ export class Session {
    * @param {CreateSessionOptions} options - The { name } of the session (mostly for debugging).
    * @returns {Promise<Session>}
    */
-  static async create(options: CreateSessionOptions): Promise<Session> {
+  static async create(options: { name: string }): Promise<Session> {
     const createSession = promisify(client.createSession).bind(client);
     const response = await createSession(options);
     return new Session(response.session_id, options.name);
@@ -58,12 +50,12 @@ export class Session {
   }
 
   /**
-   * Gets the current stats for a session/test
+   * Creates a peer connection
    * @returns {Promise<CreatePeerConnectionResponse>}
    */
-  async createPeerConnection(
-    options: CreatePeerConnectionOptions,
-  ): Promise<CreatePeerConnectionResponse> {
+  async createPeerConnection(options: {
+    name: string;
+  }): Promise<CreatePeerConnectionResponse> {
     const createPeerConnection = promisify(client.createPeerConnection).bind(
       client,
     );
@@ -71,10 +63,32 @@ export class Session {
   }
 
   /**
-   * Gets the current stats for a session/test
+   * Creates a SDP offer
+   * @returns {Promise<PeerConnectionSdp>}
+   */
+  async createOffer(options: {
+    peer_connection_id: string;
+  }): Promise<PeerConnectionSdp> {
+    const createOffer = promisify(client.createOffer).bind(client);
+    return await createOffer({ session_id: this.id, ...options });
+  }
+
+  /**
+   * Creates a SDP answer
+   * @returns {Promise<PeerConnectionSdp>}
+   */
+  async createAnswer(options: {
+    peer_connection_id: string;
+  }): Promise<PeerConnectionSdp> {
+    const createAnswer = promisify(client.createAnswer).bind(client);
+    return await createAnswer({ session_id: this.id, ...options });
+  }
+
+  /**
+   * Sets the local description
    * @returns {Promise<void>}
    */
-  async setLocalDescription(options: OfferAnswerOptions): Promise<void> {
+  async setLocalDescription(options: PeerConnectionSdp): Promise<void> {
     const setLocalDescription = promisify(client.setLocalDescription).bind(
       client,
     );
@@ -82,10 +96,10 @@ export class Session {
   }
 
   /**
-   * Gets the current stats for a session/test
+   * Sets the remote description
    * @returns {Promise<void>}
    */
-  async setRemoteDescription(options: OfferAnswerOptions): Promise<void> {
+  async setRemoteDescription(options: PeerConnectionSdp): Promise<void> {
     const setRemoteDescription = promisify(client.setRemoteDescription).bind(
       client,
     );

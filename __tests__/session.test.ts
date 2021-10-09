@@ -1,5 +1,5 @@
 import { Session } from '../src/session';
-import { answer, offer } from './fixtures/sdp';
+import { answer, offer } from '../fixtures/sdp';
 
 const SESSION_NAME = 'From Node SDK';
 const PEER_CONNECTION_NAME = 'PC from Node SDK';
@@ -46,6 +46,45 @@ describe('Session.createPeerConnection function', () => {
     await expect(
       session.createPeerConnection({ name: PEER_CONNECTION_NAME }),
     ).resolves.not.toThrow();
+  });
+});
+
+describe('Session.createOffer function', () => {
+  it('creates an offer', async () => {
+    const session = await newSession();
+    await session.start();
+    const { peer_connection_id }: any = await session.createPeerConnection({
+      name: PEER_CONNECTION_NAME,
+    });
+    let options = { peer_connection_id };
+    let offer = await session.createOffer(options);
+
+    // make sure the session id and peer connection ids match up
+    expect(offer).toMatchObject({ session_id: session.id, peer_connection_id });
+
+    // ensure that offer isn't blank
+    expect(offer.sdp).toContain('v=0');
+  });
+});
+
+describe('Session.createAnswer function', () => {
+  it('creates an answer', async () => {
+    const session = await newSession();
+    await session.start();
+    const { peer_connection_id }: any = await session.createPeerConnection({
+      name: PEER_CONNECTION_NAME,
+    });
+    let options = { peer_connection_id };
+    let answer = await session.createAnswer(options);
+
+    // make sure the session id and peer connection ids match up
+    expect(answer).toMatchObject({
+      session_id: session.id,
+      peer_connection_id,
+    });
+
+    // ensure that answer isn't blank
+    expect(answer.sdp).toContain('v=0');
   });
 });
 

@@ -1,6 +1,9 @@
 /* eslint-disable */
 /* tslint-disable */
 
+// TODO: remove once we're sending this to the gRPC server
+import { offer } from '../fixtures/sdp';
+
 // TODO: remove unused once this implementation is complete
 
 class ShimRTCPeerConnection {
@@ -85,6 +88,10 @@ class ShimRTCPeerConnection {
 
   createOffer(_options?: RTCOfferAnswerOptions): Promise<any> {
     console.log('shim::createOffer()', _options);
+
+    // TODO: create the offer on the gRPC server, use output
+    // to replace the "offer" below
+
     return new Promise((resolve, _reject) =>
       resolve({ sdp: offer, type: 'offer' }),
     );
