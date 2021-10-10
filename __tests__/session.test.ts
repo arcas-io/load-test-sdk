@@ -1,5 +1,5 @@
 import { Session } from '../src/session';
-import { answer, offer } from '../fixtures/sdp';
+import { answer } from '../fixtures/sdp';
 
 const SESSION_NAME = 'From Node SDK';
 const PEER_CONNECTION_NAME = 'PC from Node SDK';
@@ -32,7 +32,7 @@ describe('Session.stop function', () => {
 });
 
 describe('Session.getStats function', () => {
-  it('stops a session', async () => {
+  it('gets stats', async () => {
     const session = await newSession();
     await session.start();
     await expect(session.getStats()).resolves.not.toThrow();
@@ -40,7 +40,7 @@ describe('Session.getStats function', () => {
 });
 
 describe('Session.createPeerConnection function', () => {
-  it('stops a session', async () => {
+  it('creates a peer connection', async () => {
     const session = await newSession();
     await session.start();
     await expect(
@@ -56,8 +56,8 @@ describe('Session.createOffer function', () => {
     const { peer_connection_id }: any = await session.createPeerConnection({
       name: PEER_CONNECTION_NAME,
     });
-    let options = { peer_connection_id };
-    let offer = await session.createOffer(options);
+    const options = { peer_connection_id };
+    const offer = await session.createOffer(options);
 
     // make sure the session id and peer connection ids match up
     expect(offer).toMatchObject({ session_id: session.id, peer_connection_id });
@@ -74,17 +74,25 @@ describe('Session.createAnswer function', () => {
     const { peer_connection_id }: any = await session.createPeerConnection({
       name: PEER_CONNECTION_NAME,
     });
-    let options = { peer_connection_id };
-    let answer = await session.createAnswer(options);
+
+    const options = {
+      peer_connection_id,
+      sdp_type: 'answer',
+      sdp: answer,
+    };
+
+    // setting the remote description first is required for creating an answer
+    await session.setRemoteDescription(options);
+    const answerSdp = await session.createAnswer({ peer_connection_id });
 
     // make sure the session id and peer connection ids match up
-    expect(answer).toMatchObject({
+    expect(answerSdp).toMatchObject({
       session_id: session.id,
       peer_connection_id,
     });
 
     // ensure that answer isn't blank
-    expect(answer.sdp).toContain('v=0');
+    expect(answerSdp.sdp).toContain('v=0');
   });
 });
 
@@ -95,13 +103,9 @@ describe('Session.setLocalDescription function', () => {
     const { peer_connection_id }: any = await session.createPeerConnection({
       name: PEER_CONNECTION_NAME,
     });
-    let options = {
-      peer_connection_id,
-      sdp_type: 'offer',
-      sdp: offer,
-    };
+    const offer = await session.createOffer({ peer_connection_id });
 
-    await expect(session.setLocalDescription(options)).resolves.not.toThrow();
+    await expect(session.setLocalDescription(offer)).resolves.not.toThrow();
   });
 });
 
@@ -112,7 +116,7 @@ describe('Session.setRemoteDescription function', () => {
     const { peer_connection_id }: any = await session.createPeerConnection({
       name: PEER_CONNECTION_NAME,
     });
-    let options = {
+    const options = {
       peer_connection_id,
       sdp_type: 'answer',
       sdp: answer,
