@@ -29,7 +29,7 @@
     "lint": "eslint . --ext .ts,.tsx",
     "test": "jest",
     "test-coverage": "jest --coverage",
-    "test:watch": "jest --watch --verbose",
+    "test:watch": "NODE_DEBUG=http2 jest --watch --verbose",
     "autogen": "./node_modules/.bin/proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=proto/ ./../../rust/server/proto/*.proto"
   },
   "dependencies": {

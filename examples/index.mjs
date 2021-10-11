@@ -7,27 +7,84 @@ let TEST_COUNTER_MS = 0;
 const STATS_INCREMENTS_MS = 1000;
 const SOCKET_URI = 'https://127.0.0.1:3000';
 
-// register a callback to be invoked when setting the local and remote descriptions
+let session = await Session.create({ name: 'First Session' });
+console.log('session created: ', session);
+
+await session.start();
+console.log('session started: ', session);
+
+const peerConnectionName = 'First Peer Connection';
+const { peer_connection_id } = await session.createPeerConnection({
+  name: peerConnectionName,
+});
+console.log('new peer connection: ', peerConnectionName);
+
+// register callbacks to be invoked when setting the local and remote descriptions
 // TODO: move this into the SDK
-const setLocalDescription = (sdp) => console.log(sdp);
-const setRemoteDescription = (sdp) => console.log(sdp);
+const cbAddTrack = async (options) => {
+  try {
+    return await session.addTrack({ peer_connection_id, ...options });
+  } catch (e) {
+    console.error('cbCreateOffer error: ', e.details);
+  }
+};
+
+const cbCreateOffer = async (options) => {
+  try {
+    return await session.createOffer({ peer_connection_id });
+  } catch (e) {
+    console.error('cbCreateOffer error: ', e.details);
+  }
+};
+
+const cbCreateAnswer = async (options) => {
+  try {
+    return await session.createAnswer({ peer_connection_id });
+  } catch (e) {
+    console.error('cbCreateAnswer error: ', e.details);
+  }
+};
+
+const cbSetLocalDescription = async (sdp) => {
+  try {
+    const options = {
+      peer_connection_id,
+      ...sdp,
+    };
+    await session.setLocalDescription(options);
+  } catch (e) {
+    console.error('cbSetLocalDescription error: ', e.details);
+  }
+};
+
+const cbSetRemoteDescription = async (sdp) => {
+  try {
+    const options = {
+      peer_connection_id,
+      ...sdp,
+    };
+    await session.setRemoteDescription(options);
+
+    // TODO: respond with this answer to the SFU?
+    const answer = await session.createAnswer({ peer_connection_id });
+    return answer;
+  } catch (e) {
+    console.error('cbSetRemoteDescription error: ', e.details);
+  }
+};
 
 // pull in mocked DOM WebRTC calls
 // TODO: move this into the SDK
-setup(setLocalDescription, setRemoteDescription);
+setup(
+  cbAddTrack,
+  cbCreateOffer,
+  cbCreateAnswer,
+  cbSetLocalDescription,
+  cbSetRemoteDescription,
+);
 
 // interact with a provider (e.g. mediasoup) for signaling
 await provider(SOCKET_URI);
-
-// let session = await Session.create({ name: 'First Session' });
-// console.log('session created: ', session);
-
-// await session.start();
-// console.log('session started: ', session);
-
-// const peerConnectionName = 'First Peer Connection';
-// await session.createPeerConnection({ name: peerConnectionName });
-// console.log('new peer connection: ', peerConnectionName);
 
 // const interval = setInterval(async () => {
 //   TEST_COUNTER_MS += STATS_INCREMENTS_MS;

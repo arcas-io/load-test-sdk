@@ -63,6 +63,19 @@ export class Session {
   }
 
   /**
+   * Adds a track
+   * @returns {Promise<void>}
+   */
+  async addTrack(options: {
+    peer_connection_id: string;
+    track_id: string;
+    track_label: string;
+  }): Promise<void> {
+    const addTrack = promisify(client.addTrack).bind(client);
+    return await addTrack({ session_id: this.id, ...options });
+  }
+
+  /**
    * Creates a SDP offer
    * @returns {Promise<PeerConnectionSdp>}
    */

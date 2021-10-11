@@ -24,15 +24,15 @@ export async function provider(uri) {
 
   // upon connection to the SFU, begin loading the device
   socket.on('connect', async () => {
-    console.log('connected to SFU websocket');
+    console.log('MediaSoup: connected to SFU websocket');
     const rtdCapabilities = await socketRequest('getRouterRtpCapabilities');
     await loadDevice(rtdCapabilities);
 
     if (device.canProduce('video')) {
-      console.log('can produce video');
+      console.log('MediaSoup: can produce video');
     }
 
-    console.log('send to socket: createProducerTransport');
+    console.log('MediaSoup: send to socket: createProducerTransport');
     const data: any = await socketRequest('createProducerTransport', {
       forceTcp: false,
       rtpCapabilities: device.rtpCapabilities,
@@ -44,7 +44,7 @@ export async function provider(uri) {
 
     const transport = device.createSendTransport(data);
     transport.on('connect', async ({ dtlsParameters }, callback, errback) => {
-      console.log('send to socket: connectProducerTransport');
+      console.log('MediaSoup: send to socket: connectProducerTransport');
       socketRequest('connectProducerTransport', { dtlsParameters })
         .then(callback)
         .catch(errback);
@@ -69,17 +69,19 @@ export async function provider(uri) {
     transport.on('connectionstatechange', (state) => {
       switch (state) {
         case 'connecting':
-          console.log('transport::connectionstatechange: connecting');
+          console.log(
+            'MediaSoup: transport::connectionstatechange: connecting',
+          );
           break;
 
         case 'connected':
           // document.querySelector("#local_video").srcObject = stream;
-          console.log('transport::connectionstatechange: connected');
+          console.log('MediaSoup: transport::connectionstatechange: connected');
           break;
 
         case 'failed':
           transport.close();
-          console.log('transport::connectionstatechange: failed');
+          console.log('MediaSoup: transport::connectionstatechange: failed');
           break;
 
         default:
@@ -94,12 +96,12 @@ export async function provider(uri) {
       // const _producer = await transport.produce(params);
       await transport.produce(params);
     } catch (err) {
-      console.log('err: ', err);
+      console.log('MediaSoup: getUserMedia/product error: ', err);
     }
   });
 
   socket.on('message', function (event, data) {
-    console.log('receiving message');
+    console.log('MediaSoup: receiving message');
     console.log(event);
     console.log(data);
   });
@@ -114,10 +116,10 @@ export async function provider(uri) {
 }
 
 function getUserMedia(_transport) {
-  console.log('getUserMedia()');
+  console.log('MediaSoup: getUserMedia()');
   const stream = {
     getVideoTracks: () => [
-      { kind: 'video', id: '1', addEventListener: () => {} },
+      { kind: 'video', id: '0', addEventListener: () => {} },
     ],
   };
   return new Promise((resolve, _reject) => resolve(stream));
@@ -128,7 +130,7 @@ async function loadDevice(routerRtpCapabilities) {
     device = new Device();
   } catch (error) {
     if (error.name === 'UnsupportedError') {
-      console.error('browser not supported');
+      console.error('MediaSoup: browser not supported');
     }
   }
   await device.load({ routerRtpCapabilities });

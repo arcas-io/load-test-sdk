@@ -1,9 +1,6 @@
 /* eslint-disable */
 /* tslint-disable */
 
-// TODO: remove once we're sending this to the gRPC server
-import { offer } from '../fixtures/sdp';
-
 // TODO: remove unused once this implementation is complete
 
 class ShimRTCPeerConnection {
@@ -43,6 +40,7 @@ class ShimRTCPeerConnection {
   readonly signalingState: RTCSignalingState;
 
   constructor(_configuration: RTCConfiguration) {
+    console.log('ShimRTCPeerConnection::constructor()', _configuration);
     // const options: CreatePeerConnectionOptions = { name };
     // this.session.createPeerConnection(options);
   }
@@ -59,8 +57,15 @@ class ShimRTCPeerConnection {
     throw new Error('todo');
   }
 
-  addTrack(_track: MediaStreamTrack, ..._streams: MediaStream[]): any {
-    console.log('shim::addTrack()', _track);
+  async addTrack(
+    track: MediaStreamTrack,
+    ..._streams: MediaStream[]
+  ): Promise<any> {
+    console.log('ShimRTCPeerConnection::addTrack()', track);
+
+    // callback
+    await (global as any).addTrackCallback(track);
+
     return true;
   }
 
@@ -75,8 +80,15 @@ class ShimRTCPeerConnection {
     throw new Error('todo');
   }
 
-  createAnswer(_options?: RTCOfferAnswerOptions): Promise<any> {
-    throw new Error('todo');
+  async createAnswer(options?: RTCOfferAnswerOptions): Promise<any> {
+    console.log('ShimRTCPeerConnection::createAnswer()', options);
+
+    // callback
+    const answer = await (global as any).createAnswerCallback(options);
+
+    return new Promise((resolve, _reject) =>
+      resolve({ sdp: answer.sdp, type: 'answer' }),
+    );
   }
 
   createDataChannel(
@@ -86,14 +98,13 @@ class ShimRTCPeerConnection {
     throw new Error('todo');
   }
 
-  createOffer(_options?: RTCOfferAnswerOptions): Promise<any> {
-    console.log('shim::createOffer()', _options);
+  async createOffer(options?: RTCOfferAnswerOptions): Promise<any> {
+    console.log('ShimRTCPeerConnection::createOffer()', options);
 
-    // TODO: create the offer on the gRPC server, use output
-    // to replace the "offer" below
+    const offer = await (global as any).createOfferCallback(options);
 
     return new Promise((resolve, _reject) =>
-      resolve({ sdp: offer, type: 'offer' }),
+      resolve({ sdp: offer.sdp, type: 'offer' }),
     );
   }
 
@@ -138,22 +149,26 @@ class ShimRTCPeerConnection {
   }
 
   // "offer" in the test case
-  setLocalDescription(description?: RTCSessionDescriptionInit): Promise<void> {
-    console.log('shim::setLocalDescription()', description);
+  async setLocalDescription(
+    description?: RTCSessionDescriptionInit,
+  ): Promise<void> {
+    console.log('ShimRTCPeerConnection::setLocalDescription()', description);
 
     // callback
-    (global as any).setLocalDescriptionCallback(description);
+    await (global as any).setLocalDescriptionCallback(description);
 
     this.localDescription = description as RTCSessionDescription;
     return new Promise((resolve, _reject) => resolve());
   }
 
   // "answer" in the test case
-  setRemoteDescription(description: RTCSessionDescriptionInit): Promise<void> {
-    console.log('shim::setRemoteDescription()', description);
+  async setRemoteDescription(
+    description: RTCSessionDescriptionInit,
+  ): Promise<void> {
+    console.log('ShimRTCPeerConnection::setRemoteDescription()', description);
 
     // callback
-    (global as any).setRemoteDescriptionCallback(description);
+    await (global as any).setRemoteDescriptionCallback(description);
 
     this.remoteDescription = description as RTCSessionDescription;
     return new Promise((resolve, _reject) => resolve());
@@ -167,7 +182,7 @@ class ShimRTCPeerConnection {
     ) => any,
     _options?: boolean | AddEventListenerOptions,
   ): void {
-    console.log('shim::addEventListener()', _type, _listener);
+    console.log('ShimRTCPeerConnection::addEventListener()', _type, _listener);
   }
 
   removeEventListener<K extends keyof RTCPeerConnectionEventMap>(
@@ -191,8 +206,9 @@ class ShimMediaStream {
   readonly id: string;
   onaddtrack: ((this: MediaStream, ev: MediaStreamTrackEvent) => any) | null;
   onremovetrack: ((this: MediaStream, ev: MediaStreamTrackEvent) => any) | null;
-  addTrack(_track: MediaStreamTrack): void {
-    console.log('shim::addTrack()', _track);
+  addTrack(track: MediaStreamTrack): void {
+    console.log('ShimMediaStream::addTrack()', track);
+    // const { id, label } = track;
   }
 
   clone(): MediaStream {
@@ -229,16 +245,22 @@ class ShimMediaStream {
 }
 
 export function setup(
+  addTrackCallback,
+  createOfferCallback,
+  createAnswerCallback,
   setLocalDescriptionCallback,
   setRemoteDescriptionCallback,
 ) {
   // detect the right kind of global object
-  global.RTCPeerConnection = ShimRTCPeerConnection;
+  global.RTCPeerConnection = ShimRTCPeerConnection as any;
   global.navigator = {
     userAgent:
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.62 Safari/537.36',
   } as any;
   global.MediaStream = ShimMediaStream as any;
+  (global as any).addTrackCallback = addTrackCallback;
+  (global as any).createOfferCallback = createOfferCallback;
+  (global as any).createAnswerCallback = createAnswerCallback;
   (global as any).setLocalDescriptionCallback = setLocalDescriptionCallback;
   (global as any).setRemoteDescriptionCallback = setRemoteDescriptionCallback;
 }

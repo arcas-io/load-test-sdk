@@ -27,6 +27,8 @@ const routerRtpCapabilities = {
   ],
 };
 
+const creatOffer = (options) => console.log(options);
+const createAnswer = (options) => console.log(options);
 const setLocalDescription = (sdp) => console.log(sdp);
 const setRemoteDescription = (sdp) => console.log(sdp);
 let initialGlobal: any = global;
@@ -34,11 +36,12 @@ let initialGlobal: any = global;
 describe.skip('media soup works', () => {
   beforeEach(async () => {
     initialGlobal = global;
-    setup(setLocalDescription, setRemoteDescription);
+    setup(creatOffer, createAnswer, setLocalDescription, setRemoteDescription);
     await provider(SOCKET_URI);
   });
 
   afterEach(async () => {
+    // eslint-disable-next-line no-global-assign
     global = initialGlobal;
   });
 
