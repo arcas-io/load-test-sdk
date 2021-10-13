@@ -21,14 +21,6 @@ console.log('new peer connection: ', peerConnectionName);
 
 // register callbacks to be invoked when setting the local and remote descriptions
 // TODO: move this into the SDK
-const cbAddTrack = async (options) => {
-  try {
-    return await session.addTrack({ peer_connection_id, ...options });
-  } catch (e) {
-    console.error('cbCreateOffer error: ', e.details);
-  }
-};
-
 const cbCreateOffer = async (options) => {
   try {
     return await session.createOffer({ peer_connection_id });
@@ -73,14 +65,31 @@ const cbSetRemoteDescription = async (sdp) => {
   }
 };
 
+const cbAddTrack = async (options) => {
+  try {
+    return await session.addTrack({ peer_connection_id, ...options });
+  } catch (e) {
+    console.error('cbAddTrack error: ', e.details);
+  }
+};
+
+const cbAddTransceiver = async (options) => {
+  try {
+    return await session.addTransceiver({ peer_connection_id, ...options });
+  } catch (e) {
+    console.error('cbAddTransceiver error: ', e.details);
+  }
+};
+
 // pull in mocked DOM WebRTC calls
 // TODO: move this into the SDK
 setup(
-  cbAddTrack,
   cbCreateOffer,
   cbCreateAnswer,
   cbSetLocalDescription,
+  cbAddTrack,
   cbSetRemoteDescription,
+  cbAddTransceiver,
 );
 
 // interact with a provider (e.g. mediasoup) for signaling

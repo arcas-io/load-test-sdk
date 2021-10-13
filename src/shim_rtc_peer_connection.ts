@@ -76,9 +76,9 @@ class ShimRTCPeerConnection {
     console.log('addTransceiver::addTrack()', _trackOrKind);
 
     // callback
-    await (global as any).addTransceiverCallback();
+    // await (global as any).addTransceiverCallback();
 
-    return new RTCRtpTransceiver();
+    return {} as RTCRtpTransceiver;
   }
 
   close(): void {
