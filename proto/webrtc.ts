@@ -15,6 +15,7 @@ export interface ProtoGrpcType {
   }
   webrtc: {
     AddTrackRequest: MessageTypeDefinition
+    AddTransceiverRequest: MessageTypeDefinition
     CreatePeerConnectionRequest: MessageTypeDefinition
     CreatePeerConnectionResponse: MessageTypeDefinition
     CreateSDPRequest: MessageTypeDefinition

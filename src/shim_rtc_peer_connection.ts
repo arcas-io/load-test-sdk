@@ -69,11 +69,16 @@ class ShimRTCPeerConnection {
     return true;
   }
 
-  addTransceiver(
+  async addTransceiver(
     _trackOrKind: MediaStreamTrack | string,
     _init?: RTCRtpTransceiverInit,
-  ): RTCRtpTransceiver {
-    throw new Error('todo');
+  ): Promise<RTCRtpTransceiver> {
+    console.log('addTransceiver::addTrack()', _trackOrKind);
+
+    // callback
+    await (global as any).addTransceiverCallback();
+
+    return new RTCRtpTransceiver();
   }
 
   close(): void {
@@ -86,9 +91,7 @@ class ShimRTCPeerConnection {
     // callback
     const answer = await (global as any).createAnswerCallback(options);
 
-    return new Promise((resolve, _reject) =>
-      resolve({ sdp: answer.sdp, type: 'answer' }),
-    );
+    return { sdp: answer.sdp, type: 'answer' };
   }
 
   createDataChannel(
@@ -103,9 +106,7 @@ class ShimRTCPeerConnection {
 
     const offer = await (global as any).createOfferCallback(options);
 
-    return new Promise((resolve, _reject) =>
-      resolve({ sdp: offer.sdp, type: 'offer' }),
-    );
+    return { sdp: offer.sdp, type: 'offer' };
   }
 
   getConfiguration(): RTCConfiguration {
@@ -158,7 +159,6 @@ class ShimRTCPeerConnection {
     await (global as any).setLocalDescriptionCallback(description);
 
     this.localDescription = description as RTCSessionDescription;
-    return new Promise((resolve, _reject) => resolve());
   }
 
   // "answer" in the test case
@@ -171,7 +171,6 @@ class ShimRTCPeerConnection {
     await (global as any).setRemoteDescriptionCallback(description);
 
     this.remoteDescription = description as RTCSessionDescription;
-    return new Promise((resolve, _reject) => resolve());
   }
 
   addEventListener<K extends keyof RTCPeerConnectionEventMap>(
@@ -245,11 +244,12 @@ class ShimMediaStream {
 }
 
 export function setup(
-  addTrackCallback,
   createOfferCallback,
   createAnswerCallback,
   setLocalDescriptionCallback,
   setRemoteDescriptionCallback,
+  addTrackCallback,
+  addTransceiverCallback,
 ) {
   // detect the right kind of global object
   global.RTCPeerConnection = ShimRTCPeerConnection as any;
@@ -258,9 +258,10 @@ export function setup(
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3396.62 Safari/537.36',
   } as any;
   global.MediaStream = ShimMediaStream as any;
-  (global as any).addTrackCallback = addTrackCallback;
   (global as any).createOfferCallback = createOfferCallback;
   (global as any).createAnswerCallback = createAnswerCallback;
   (global as any).setLocalDescriptionCallback = setLocalDescriptionCallback;
   (global as any).setRemoteDescriptionCallback = setRemoteDescriptionCallback;
+  (global as any).addTrackCallback = addTrackCallback;
+  (global as any).addTransceiverCallback = addTransceiverCallback;
 }

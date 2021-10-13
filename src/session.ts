@@ -63,19 +63,6 @@ export class Session {
   }
 
   /**
-   * Adds a track
-   * @returns {Promise<void>}
-   */
-  async addTrack(options: {
-    peer_connection_id: string;
-    track_id: string;
-    track_label: string;
-  }): Promise<void> {
-    const addTrack = promisify(client.addTrack).bind(client);
-    return await addTrack({ session_id: this.id, ...options });
-  }
-
-  /**
    * Creates a SDP offer
    * @returns {Promise<PeerConnectionSdp>}
    */
@@ -117,5 +104,27 @@ export class Session {
       client,
     );
     return await setRemoteDescription({ session_id: this.id, ...options });
+  }
+
+  /**
+   * Adds a track
+   * @returns {Promise<void>}
+   */
+  async addTrack(options: {
+    peer_connection_id: string;
+    track_id: string;
+    track_label: string;
+  }): Promise<void> {
+    const addTrack = promisify(client.addTrack).bind(client);
+    return await addTrack({ session_id: this.id, ...options });
+  }
+
+  /**
+   * Adds a Transceiver
+   * @returns {Promise<void>}
+   */
+  async addTransceiver(options: { peer_connection_id: string }): Promise<void> {
+    const addTransceiver = promisify(client.addTransceiver).bind(client);
+    return await addTransceiver({ session_id: this.id, ...options });
   }
 }

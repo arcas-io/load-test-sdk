@@ -49,23 +49,6 @@ describe('Session.createPeerConnection function', () => {
   });
 });
 
-describe('Session.addTrack function', () => {
-  it('adds a track', async () => {
-    const session = await newSession();
-    await session.start();
-    const { peer_connection_id }: any = await session.createPeerConnection({
-      name: PEER_CONNECTION_NAME,
-    });
-    await expect(
-      session.addTrack({
-        peer_connection_id,
-        track_id: '1',
-        track_label: 'FirstLabel',
-      }),
-    ).resolves.not.toThrow();
-  });
-});
-
 describe('Session.createOffer function', () => {
   it('creates an offer', async () => {
     const session = await newSession();
@@ -140,5 +123,37 @@ describe('Session.setRemoteDescription function', () => {
     };
 
     await expect(session.setRemoteDescription(options)).resolves.not.toThrow();
+  });
+
+  describe('Session.addTrack function', () => {
+    it('adds a track', async () => {
+      const session = await newSession();
+      await session.start();
+      const { peer_connection_id }: any = await session.createPeerConnection({
+        name: PEER_CONNECTION_NAME,
+      });
+      await expect(
+        session.addTrack({
+          peer_connection_id,
+          track_id: '1',
+          track_label: 'FirstLabel',
+        }),
+      ).resolves.not.toThrow();
+    });
+  });
+
+  describe('Session.addTransceiver function', () => {
+    it('adds a track', async () => {
+      const session = await newSession();
+      await session.start();
+      const { peer_connection_id }: any = await session.createPeerConnection({
+        name: PEER_CONNECTION_NAME,
+      });
+      await expect(
+        session.addTransceiver({
+          peer_connection_id,
+        }),
+      ).resolves.not.toThrow();
+    });
   });
 });
