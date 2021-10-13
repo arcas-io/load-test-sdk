@@ -76,7 +76,7 @@ class ShimRTCPeerConnection {
     console.log('addTransceiver::addTrack()', _trackOrKind);
 
     // callback
-    // await (global as any).addTransceiverCallback();
+    await (global as any).addTransceiverCallback();
 
     return {} as RTCRtpTransceiver;
   }
@@ -105,8 +105,10 @@ class ShimRTCPeerConnection {
     console.log('ShimRTCPeerConnection::createOffer()', options);
 
     const offer = await (global as any).createOfferCallback(options);
+    // this.localDescription = offer as RTCSessionDescription;
+    // await (global as any).setLocalDescriptionCallback(this.localDescription);
 
-    return { sdp: offer.sdp, type: 'offer' };
+    return offer;
   }
 
   getConfiguration(): RTCConfiguration {
@@ -149,11 +151,10 @@ class ShimRTCPeerConnection {
     throw new Error('todo');
   }
 
-  // "offer" in the test case
   async setLocalDescription(
     description?: RTCSessionDescriptionInit,
   ): Promise<void> {
-    console.log('ShimRTCPeerConnection::setLocalDescription()', description);
+    console.log('ShimRTCPeerConnection::setLocalDescription()');
 
     // callback
     await (global as any).setLocalDescriptionCallback(description);
@@ -165,7 +166,7 @@ class ShimRTCPeerConnection {
   async setRemoteDescription(
     description: RTCSessionDescriptionInit,
   ): Promise<void> {
-    console.log('ShimRTCPeerConnection::setRemoteDescription()', description);
+    console.log('ShimRTCPeerConnection::setRemoteDescription()');
 
     // callback
     await (global as any).setRemoteDescriptionCallback(description);
