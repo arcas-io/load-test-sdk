@@ -34,3 +34,9 @@ To run the example script, which matches the API in the user story:
 ```shell
 yarn build && node examples/index.mjs
 ```
+
+## Debugging MediaSoup
+
+```
+DEBUG="mediasoup*" node examples/index.mjs
+```

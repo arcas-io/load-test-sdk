@@ -73,10 +73,14 @@ class ShimRTCPeerConnection {
     _trackOrKind: MediaStreamTrack | string,
     _init?: RTCRtpTransceiverInit,
   ): Promise<RTCRtpTransceiver> {
-    console.log('addTransceiver::addTrack()', _trackOrKind);
+    console.log('addTransceiver::addTransceiver()', _trackOrKind);
 
-    // callback
-    await (global as any).addTransceiverCallback();
+    if (_init) {
+      // callback
+      await (global as any).addTransceiverCallback();
+    } else {
+      console.log("just getting capabilities, don't add transceiver");
+    }
 
     return {} as RTCRtpTransceiver;
   }
@@ -102,13 +106,13 @@ class ShimRTCPeerConnection {
   }
 
   async createOffer(options?: RTCOfferAnswerOptions): Promise<any> {
-    console.log('ShimRTCPeerConnection::createOffer()', options);
-
-    const offer = await (global as any).createOfferCallback(options);
     // this.localDescription = offer as RTCSessionDescription;
     // await (global as any).setLocalDescriptionCallback(this.localDescription);
 
-    return offer;
+    console.log('ShimRTCPeerConnection::createOffer()');
+    const offer = await (global as any).createOfferCallback(options);
+
+    return { sdp: offer.sdp, type: 'offer' };
   }
 
   getConfiguration(): RTCConfiguration {
