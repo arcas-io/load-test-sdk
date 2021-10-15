@@ -97,15 +97,15 @@ setup(
 // interact with a provider (e.g. mediasoup) for signaling
 await provider(SOCKET_URI);
 
-// const interval = setInterval(async () => {
-//   TEST_COUNTER_MS += STATS_INCREMENTS_MS;
+const interval = setInterval(async () => {
+  TEST_COUNTER_MS += STATS_INCREMENTS_MS;
 
-//   if (TEST_COUNTER_MS >= TEST_TIME_MS) {
-//     clearInterval(interval);
-//     await session.stop();
-//     console.log('session stopped: ', session);
-//   }
+  if (TEST_COUNTER_MS >= TEST_TIME_MS) {
+    clearInterval(interval);
+    await session.stop();
+    console.log('session stopped: ', session);
+  }
 
-//   const stats = await session.getStats();
-//   console.log('stats: ', stats);
-// }, STATS_INCREMENTS_MS);
+  const stats = await session.getStats();
+  console.log('stats: ', stats);
+}, STATS_INCREMENTS_MS);
