@@ -43,7 +43,8 @@ const cbSetLocalDescription = async (sdp) => {
   try {
     const options = {
       peer_connection_id,
-      ...sdp,
+      sdp: sdp.sdp,
+      sdp_type: sdp.type,
     };
     await session.setLocalDescription(options);
   } catch (e) {
