@@ -2,7 +2,7 @@ import { Session } from './../build/src/main.js';
 import { setup } from './../build/src/shim_rtc_peer_connection.js';
 import { provider } from './../build/src/mediasoup.js';
 
-const TEST_TIME_MS = 5000;
+const TEST_TIME_MS = 50000;
 let TEST_COUNTER_MS = 0;
 const STATS_INCREMENTS_MS = 1000;
 const SOCKET_URI = 'https://127.0.0.1:3000';
@@ -12,6 +12,8 @@ console.log('session created: ', session);
 
 await session.start();
 console.log('session started: ', session);
+
+setTimeout(function () {}, 5000);
 
 const peerConnectionName = 'First Peer Connection';
 const { peer_connection_id } = await session.createPeerConnection({
