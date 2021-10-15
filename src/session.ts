@@ -123,7 +123,11 @@ export class Session {
    * Adds a Transceiver
    * @returns {Promise<void>}
    */
-  async addTransceiver(options: { peer_connection_id: string }): Promise<void> {
+  async addTransceiver(options: {
+    peer_connection_id: string;
+    track_id: string;
+    track_label: string;
+  }): Promise<void> {
     const addTransceiver = promisify(client.addTransceiver).bind(client);
     return await addTransceiver({ session_id: this.id, ...options });
   }

@@ -152,6 +152,8 @@ describe('Session.setRemoteDescription function', () => {
       await expect(
         session.addTransceiver({
           peer_connection_id,
+          track_id: '1',
+          track_label: 'FirstLabel',
         }),
       ).resolves.not.toThrow();
     });

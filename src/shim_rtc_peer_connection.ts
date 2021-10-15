@@ -77,7 +77,9 @@ class ShimRTCPeerConnection {
 
     if (_init) {
       // callback
-      await (global as any).addTransceiverCallback();
+      await (global as any).addTransceiverCallback({
+        ...(_trackOrKind as any),
+      });
     } else {
       console.log("just getting capabilities, don't add transceiver");
     }
@@ -172,10 +174,15 @@ class ShimRTCPeerConnection {
   ): Promise<void> {
     console.log('ShimRTCPeerConnection::setRemoteDescription()');
 
-    // callback
-    await (global as any).setRemoteDescriptionCallback(description);
+    let sdp = {
+      sdp: description.sdp,
+      type: 'ANSWER',
+    };
 
-    this.remoteDescription = description as RTCSessionDescription;
+    // callback
+    await (global as any).setRemoteDescriptionCallback(sdp);
+
+    this.remoteDescription = sdp as RTCSessionDescription;
   }
 
   addEventListener<K extends keyof RTCPeerConnectionEventMap>(

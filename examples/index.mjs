@@ -55,13 +55,14 @@ const cbSetRemoteDescription = async (sdp) => {
   try {
     const options = {
       peer_connection_id,
-      ...sdp,
+      sdp: sdp.sdp,
+      sdp_type: sdp.type,
     };
     await session.setRemoteDescription(options);
 
     // TODO: respond with this answer to the SFU?
-    const answer = await session.createAnswer({ peer_connection_id });
-    return answer;
+    // const answer = await session.createAnswer({ peer_connection_id });
+    // return answer;
   } catch (e) {
     console.error('cbSetRemoteDescription error: ', e.details);
   }
@@ -89,8 +90,8 @@ setup(
   cbCreateOffer,
   cbCreateAnswer,
   cbSetLocalDescription,
-  cbAddTrack,
   cbSetRemoteDescription,
+  cbAddTrack,
   cbAddTransceiver,
 );
 
