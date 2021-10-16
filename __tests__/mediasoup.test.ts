@@ -27,25 +27,18 @@ const routerRtpCapabilities = {
   ],
 };
 
-const creatOffer = (options) => console.log(options);
-const createAnswer = (options) => console.log(options);
-const setLocalDescription = (sdp) => console.log(sdp);
-const setRemoteDescription = (sdp) => console.log(sdp);
-const addTrack = (sdp) => console.log(sdp);
-const addTransceiver = (sdp) => console.log(sdp);
+// const creatOffer = (options) => console.log(options);
+// const createAnswer = (options) => console.log(options);
+// const setLocalDescription = (sdp) => console.log(sdp);
+// const setRemoteDescription = (sdp) => console.log(sdp);
+// const addTrack = (sdp) => console.log(sdp);
+// const addTransceiver = (sdp) => console.log(sdp);
 let initialGlobal: any = global;
 
 describe.skip('media soup works', () => {
   beforeEach(async () => {
     initialGlobal = global;
-    setup(
-      creatOffer,
-      createAnswer,
-      setLocalDescription,
-      setRemoteDescription,
-      addTrack,
-      addTransceiver,
-    );
+    setup();
     await provider(SOCKET_URI);
   });
 

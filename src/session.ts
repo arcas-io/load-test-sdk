@@ -1,6 +1,8 @@
 import { promisify } from 'util';
 import { client } from './client';
 import { CreatePeerConnectionResponse } from './../proto/webrtc/CreatePeerConnectionResponse';
+import { Callbacks } from './callbacks';
+import { setup } from './shim_rtc_peer_connection';
 
 export type PeerConnectionSdp = {
   peer_connection_id: string;
@@ -9,7 +11,11 @@ export type PeerConnectionSdp = {
 };
 
 export class Session {
-  constructor(public id: string, public name: string) {}
+  public callbacks: Callbacks;
+
+  constructor(public id: string, public name: string) {
+    this.callbacks = new Callbacks(this);
+  }
 
   /**
    * Create a new session
@@ -19,7 +25,10 @@ export class Session {
   static async create(options: { name: string }): Promise<Session> {
     const createSession = promisify(client.createSession).bind(client);
     const response = await createSession(options);
-    return new Session(response.session_id, options.name);
+    const session = new Session(response.session_id, options.name);
+    setup(session);
+
+    return session;
   }
 
   /**
@@ -85,6 +94,14 @@ export class Session {
   }
 
   /**
+   * The server requires upper case sdp types
+   * @returns PeerConnectionSdp
+   */
+  normalizeSdp(sdp: PeerConnectionSdp): PeerConnectionSdp {
+    return { ...sdp, sdp_type: sdp.sdp_type.toUpperCase() };
+  }
+
+  /**
    * Sets the local description
    * @returns {Promise<void>}
    */
@@ -92,7 +109,8 @@ export class Session {
     const setLocalDescription = promisify(client.setLocalDescription).bind(
       client,
     );
-    return await setLocalDescription({ session_id: this.id, ...options });
+    const sdp = this.normalizeSdp(options);
+    return await setLocalDescription({ session_id: this.id, ...sdp });
   }
 
   /**
@@ -103,7 +121,8 @@ export class Session {
     const setRemoteDescription = promisify(client.setRemoteDescription).bind(
       client,
     );
-    return await setRemoteDescription({ session_id: this.id, ...options });
+    const sdp = this.normalizeSdp(options);
+    return await setRemoteDescription({ session_id: this.id, ...sdp });
   }
 
   /**
