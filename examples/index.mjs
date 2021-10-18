@@ -6,6 +6,8 @@ let TEST_COUNTER_MS = 0;
 const STATS_INCREMENTS_MS = 1000;
 const SOCKET_URI = 'https://127.0.0.1:3000';
 
+const timer = (ms) => new Promise((res) => setTimeout(res, ms));
+
 // wait for the device to load
 // hack for now, switch to events
 const socketConnectCallback = async (device) => {
@@ -17,6 +19,8 @@ const socketConnectCallback = async (device) => {
     console.log('new peer connection: ', peerConnectionName);
 
     await createTransport(device, peer_connection_id);
+
+    await timer(100);
   }
 
   const interval = setInterval(async () => {

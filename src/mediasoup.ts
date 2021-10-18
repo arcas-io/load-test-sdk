@@ -63,6 +63,7 @@ export async function createTransport(device, peerConnectionId) {
   }
 
   const transport = device.createSendTransport(data);
+
   transport.on('connect', async ({ dtlsParameters }, callback, errback) => {
     console.log('MediaSoup: send to socket: connectProducerTransport');
     socketRequest('connectProducerTransport', { dtlsParameters })
@@ -118,14 +119,14 @@ export async function createTransport(device, peerConnectionId) {
   }
 }
 
-function getUserMedia(_transport, peerConnectionId) {
+async function getUserMedia(_transport, peerConnectionId) {
   console.log('MediaSoup: getUserMedia()');
   const stream = {
     getVideoTracks: () => [
       { kind: 'video', id: peerConnectionId, addEventListener: () => {} },
     ],
   };
-  return new Promise((resolve, _reject) => resolve(stream));
+  return stream;
 }
 
 async function loadDevice(routerRtpCapabilities) {
