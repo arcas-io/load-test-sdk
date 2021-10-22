@@ -19,12 +19,24 @@ A gRPC server will need to be running to run tests.
 This project currently assumes the server is running on `[::]:50051`.
 
 ## TDD
+To test all tests while developing:
 ```shell
 yarn test:watch
+```
+
+To test a single test while developing:
+```shell
+yarn test:watch -t setRemoteDescription
 ```
 ## Example
 To run the example script, which matches the API in the user story:
 
 ```shell
 yarn build && node examples/index.mjs
+```
+
+## Debugging MediaSoup
+
+```
+DEBUG="mediasoup*" node examples/index.mjs
 ```

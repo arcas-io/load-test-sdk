@@ -1,5 +1,5 @@
 import type * as grpc from '@grpc/grpc-js';
-import type { MessageTypeDefinition } from '@grpc/proto-loader';
+import type { EnumTypeDefinition, MessageTypeDefinition } from '@grpc/proto-loader';
 
 import type { WebRtcClient as _webrtc_WebRtcClient, WebRtcDefinition as _webrtc_WebRtcDefinition } from './webrtc/WebRtc';
 
@@ -14,8 +14,12 @@ export interface ProtoGrpcType {
     }
   }
   webrtc: {
+    AddTrackRequest: MessageTypeDefinition
+    AddTransceiverRequest: MessageTypeDefinition
     CreatePeerConnectionRequest: MessageTypeDefinition
     CreatePeerConnectionResponse: MessageTypeDefinition
+    CreateSDPRequest: MessageTypeDefinition
+    CreateSDPResponse: MessageTypeDefinition
     CreateSessionRequest: MessageTypeDefinition
     CreateSessionResponse: MessageTypeDefinition
     Empty: MessageTypeDefinition
@@ -23,7 +27,10 @@ export interface ProtoGrpcType {
     GetStatsResponse: MessageTypeDefinition
     PeerConnectionStat: MessageTypeDefinition
     PeerConnectionStats: MessageTypeDefinition
+    SDPType: EnumTypeDefinition
     SessionStats: MessageTypeDefinition
+    SetSDPRequest: MessageTypeDefinition
+    SetSDPResponse: MessageTypeDefinition
     StartSessionRequest: MessageTypeDefinition
     StopSessionRequest: MessageTypeDefinition
     WebRtc: SubtypeConstructor<typeof grpc.Client, _webrtc_WebRtcClient> & { service: _webrtc_WebRtcDefinition }

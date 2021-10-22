@@ -1,4 +1,5 @@
 import { Session } from '../src/session';
+import { answer } from '../fixtures/sdp';
 
 const SESSION_NAME = 'From Node SDK';
 const PEER_CONNECTION_NAME = 'PC from Node SDK';
@@ -31,7 +32,7 @@ describe('Session.stop function', () => {
 });
 
 describe('Session.getStats function', () => {
-  it('stops a session', async () => {
+  it('gets stats', async () => {
     const session = await newSession();
     await session.start();
     await expect(session.getStats()).resolves.not.toThrow();
@@ -39,11 +40,122 @@ describe('Session.getStats function', () => {
 });
 
 describe('Session.createPeerConnection function', () => {
-  it('stops a session', async () => {
+  it('creates a peer connection', async () => {
     const session = await newSession();
     await session.start();
     await expect(
       session.createPeerConnection({ name: PEER_CONNECTION_NAME }),
     ).resolves.not.toThrow();
+  });
+});
+
+describe('Session.createOffer function', () => {
+  it('creates an offer', async () => {
+    const session = await newSession();
+    await session.start();
+    const { peer_connection_id }: any = await session.createPeerConnection({
+      name: PEER_CONNECTION_NAME,
+    });
+    const options = { peer_connection_id };
+    const offer = await session.createOffer(options);
+
+    // make sure the session id and peer connection ids match up
+    expect(offer).toMatchObject({ session_id: session.id, peer_connection_id });
+
+    // ensure that offer isn't blank
+    expect(offer.sdp).toContain('v=0');
+  });
+});
+
+describe('Session.createAnswer function', () => {
+  it('creates an answer', async () => {
+    const session = await newSession();
+    await session.start();
+    const { peer_connection_id }: any = await session.createPeerConnection({
+      name: PEER_CONNECTION_NAME,
+    });
+
+    const options = {
+      peer_connection_id,
+      sdp_type: 'answer',
+      sdp: answer,
+    };
+
+    // setting the remote description first is required for creating an answer
+    await session.setRemoteDescription(options);
+    const answerSdp = await session.createAnswer({ peer_connection_id });
+
+    // make sure the session id and peer connection ids match up
+    expect(answerSdp).toMatchObject({
+      session_id: session.id,
+      peer_connection_id,
+    });
+
+    // ensure that answer isn't blank
+    expect(answerSdp.sdp).toContain('v=0');
+  });
+});
+
+describe('Session.setLocalDescription function', () => {
+  it('sets the local description', async () => {
+    const session = await newSession();
+    await session.start();
+    const { peer_connection_id }: any = await session.createPeerConnection({
+      name: PEER_CONNECTION_NAME,
+    });
+    const offer = await session.createOffer({ peer_connection_id });
+
+    await expect(session.setLocalDescription(offer)).resolves.not.toThrow();
+  });
+});
+
+describe('Session.setRemoteDescription function', () => {
+  it('sets the remote description', async () => {
+    const session = await newSession();
+    await session.start();
+    const { peer_connection_id }: any = await session.createPeerConnection({
+      name: PEER_CONNECTION_NAME,
+    });
+    const options = {
+      peer_connection_id,
+      sdp_type: 'answer',
+      sdp: answer,
+    };
+
+    await expect(session.setRemoteDescription(options)).resolves.not.toThrow();
+  });
+
+  describe('Session.addTrack function', () => {
+    it('adds a track', async () => {
+      const session = await newSession();
+      await session.start();
+      const { peer_connection_id }: any = await session.createPeerConnection({
+        name: PEER_CONNECTION_NAME,
+      });
+      await expect(
+        session.addTrack({
+          peer_connection_id,
+          track_id: '1',
+          track_label: 'FirstLabel',
+        }),
+      ).resolves.not.toThrow();
+    });
+  });
+
+  describe('Session.addTransceiver function', () => {
+    it('adds a track', async () => {
+      const session = await newSession();
+      await session.start();
+      const { peer_connection_id }: any = await session.createPeerConnection({
+        name: PEER_CONNECTION_NAME,
+      });
+      await expect(
+        session.addTransceiver({
+          peer_connection_id,
+          track_id: '1',
+          track_label: 'FirstLabel',
+        }),
+      ).resolves.not.toThrow();
+    });
   });
 });
