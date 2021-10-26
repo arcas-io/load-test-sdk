@@ -11,7 +11,7 @@ const timer = (ms) => new Promise((res) => setTimeout(res, ms));
 // wait for the device to load
 // hack for now, switch to events
 const socketConnectCallback = async (device) => {
-  for (let i = 0; i < 500; i++) {
+  for (let i = 0; i < 5; i++) {
     const peerConnectionName = `Peer Connection ${i + 1}`;
     const { peer_connection_id } = await session.createPeerConnection({
       name: peerConnectionName,
