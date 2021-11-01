@@ -2,10 +2,10 @@ import { Session } from './../build/src/main.js';
 import { provider, createTransport } from './../build/src/mediasoup.js';
 
 const TEST_TIME_MS = 50000;
-let TEST_COUNTER_MS = 0;
 const STATS_INCREMENTS_MS = 1000;
 const SOCKET_URI = 'https://0.0.0.0:3000';
 
+let TEST_COUNTER_MS = 0;
 const timer = (ms) => new Promise((res) => setTimeout(res, ms));
 
 // wait for the device to load
