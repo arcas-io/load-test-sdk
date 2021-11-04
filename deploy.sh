@@ -2,7 +2,7 @@
 
 repo=../../../arcas-test-script-example
 
-#yarn build
+yarn build
 cp -R build ${repo}
 cp examples/index.mjs ${repo}/index.mjs
 cp ../../rust/server/proto/webrtc.proto ${repo}/build/proto/webrtc.proto
