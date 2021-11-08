@@ -40,3 +40,9 @@ yarn build && node examples/index.mjs
 ```
 DEBUG="mediasoup*" node examples/index.mjs
 ```
+
+## Deploy to the arcas-test-script-example repo
+To push new code to the arcas-test-script-example repo:
+```shell
+./deploy.sh
+```
