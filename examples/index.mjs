@@ -6,7 +6,6 @@ const STATS_INCREMENTS_MS = 1000;
 const SOCKET_URI = 'https://127.0.0.1:3000';
 
 let TEST_COUNTER_MS = 0;
-const timer = (ms) => new Promise((res) => setTimeout(res, ms));
 
 // wait for the device to load
 // hack for now, switch to events
@@ -19,8 +18,6 @@ const socketConnectCallback = async (device) => {
     console.log('new peer connection: ', peerConnectionName);
 
     await createTransport(device, peer_connection_id);
-
-    await timer(100);
   }
 
   const interval = setInterval(async () => {
@@ -29,7 +26,8 @@ const socketConnectCallback = async (device) => {
     if (TEST_COUNTER_MS >= TEST_TIME_MS) {
       clearInterval(interval);
       await session.stop();
-      console.log('session stopped: ', session);
+      console.log(`session stopped (${session.id}, ${session.name})`);
+      process.exit();
     }
 
     const stats = await session.getStats();
@@ -38,10 +36,10 @@ const socketConnectCallback = async (device) => {
 };
 
 let session = await Session.create({ name: 'First Session' });
-console.log(`session created: ${session.id}, ${session.name}`);
+console.log(`session created (${session.id}, ${session.name})`);
 
 await session.start();
-console.log(`session started: ${session.id}, ${session.name}`);
+console.log(`session started (${session.id}, ${session.name})`);
 
 // interact with a provider (e.g. mediasoup) for signaling
 await provider(SOCKET_URI, socketConnectCallback);

@@ -10,8 +10,86 @@ export type PeerConnectionSdp = {
   sdp: string;
 };
 
+export interface DeferredPromise<ValueType> {
+  /**
+  The deferred promise.
+  */
+  promise: Promise<ValueType>;
+
+  /**
+  Resolves the promise with a value or the result of another promise.
+  @param value - The value to resolve the promise with.
+  */
+  resolve(value?: ValueType | PromiseLike<ValueType>): void;
+
+  /**
+  Reject the promise with a provided reason or error.
+  @param reason - The reason or error to reject the promise with.
+  */
+  reject(reason?: unknown): void;
+}
+
+function defer<T>(): DeferredPromise<T> {
+  const deferred = {} as any;
+
+  deferred.promise = new Promise((resolve, reject) => {
+    deferred.resolve = resolve;
+    deferred.reject = reject;
+  });
+
+  return deferred;
+}
+
+/**
+ * Many peer connection api methods must be qeueud such that they do not arrive
+ * at the server out of order.
+ */
+class Queue {
+  queue: Array<[() => Promise<any>, DeferredPromise<any>]> = [];
+  running = false;
+
+  public queue_call<T>(fn: () => Promise<T>): Promise<T> {
+    const later = defer<T>();
+    this.queue.push([fn, later]);
+    this.run();
+
+    return later.promise;
+  }
+
+  private run() {
+    if (this.running) {
+      return
+    }
+    this.running = true;
+    const item = this.queue.shift();
+    if (!item) {
+      this.running = false;
+      return;
+    }
+
+    const [fn, later] = item;
+    fn().then(value => {
+      later.resolve(value);
+      this.running = false;
+      this.run();
+    }).catch(err => {
+      later.reject(err);
+      this.running = false;
+      this.run();
+    });
+  }
+}
+
 export class Session {
   public callbacks: Callbacks;
+  private queues: Map<string, Queue> = new Map();
+
+  private get_queue(id: string) {
+    if (!this.queues.has(id)) {
+      this.queues.set(id, new Queue());
+    }
+    return this.queues.get(id);
+  }
 
   constructor(public id: string, public name: string) {
     this.callbacks = new Callbacks(this);
@@ -79,7 +157,7 @@ export class Session {
     peer_connection_id: string;
   }): Promise<PeerConnectionSdp> {
     const createOffer = promisify(client.createOffer).bind(client);
-    return await createOffer({ session_id: this.id, ...options });
+    return this.get_queue(options.peer_connection_id).queue_call(() => createOffer({ session_id: this.id, ...options }));
   }
 
   /**
@@ -90,7 +168,7 @@ export class Session {
     peer_connection_id: string;
   }): Promise<PeerConnectionSdp> {
     const createAnswer = promisify(client.createAnswer).bind(client);
-    return await createAnswer({ session_id: this.id, ...options });
+    return this.get_queue(options.peer_connection_id).queue_call(() => createAnswer({ session_id: this.id, ...options }));
   }
 
   /**
@@ -101,6 +179,8 @@ export class Session {
     return { ...sdp, sdp_type: sdp.sdp_type.toUpperCase() };
   }
 
+
+
   /**
    * Sets the local description
    * @returns {Promise<void>}
@@ -110,7 +190,7 @@ export class Session {
       client,
     );
     const sdp = this.normalizeSdp(options);
-    return await setLocalDescription({ session_id: this.id, ...sdp });
+    return this.get_queue(options.peer_connection_id).queue_call(() => setLocalDescription({ session_id: this.id, ...sdp }));
   }
 
   /**
@@ -122,7 +202,7 @@ export class Session {
       client,
     );
     const sdp = this.normalizeSdp(options);
-    return await setRemoteDescription({ session_id: this.id, ...sdp });
+    return this.get_queue(options.peer_connection_id).queue_call(() => setRemoteDescription({ session_id: this.id, ...sdp }));
   }
 
   /**
@@ -135,7 +215,7 @@ export class Session {
     track_label: string;
   }): Promise<void> {
     const addTrack = promisify(client.addTrack).bind(client);
-    return await addTrack({ session_id: this.id, ...options });
+    return this.get_queue(options.peer_connection_id).queue_call(() => addTrack({ session_id: this.id, ...options }));
   }
 
   /**
@@ -148,6 +228,6 @@ export class Session {
     track_label: string;
   }): Promise<void> {
     const addTransceiver = promisify(client.addTransceiver).bind(client);
-    return await addTransceiver({ session_id: this.id, ...options });
+    return this.get_queue(options.peer_connection_id).queue_call(() => addTransceiver({ session_id: this.id, ...options }));
   }
 }
