@@ -4,6 +4,7 @@ import { provider, createTransport } from './../build/src/mediasoup.js';
 const TEST_TIME_MS = 50000;
 const STATS_INCREMENTS_MS = 1000;
 const SOCKET_URI = 'https://127.0.0.1:3000';
+const SERVERS = ['[::]:50051', '[::]:50051', '[::]:50051'];
 
 let TEST_COUNTER_MS = 0;
 
@@ -29,13 +30,13 @@ const socketConnectCallback = async (device) => {
       console.log(`session stopped (${session.id}, ${session.name})`);
       process.exit();
     }
-
-    const stats = await session.getStats();
-    console.log('stats: ', stats);
   }, STATS_INCREMENTS_MS);
 };
 
-let session = await Session.create({ name: 'First Session' });
+const session = await Session.create({
+  name: 'First Session',
+  servers: SERVERS,
+});
 console.log(`session created (${session.id}, ${session.name})`);
 
 await session.start();

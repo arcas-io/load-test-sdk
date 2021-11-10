@@ -3,26 +3,45 @@ import * as protoLoader from '@grpc/proto-loader';
 import { ProtoGrpcType } from './../proto/webrtc';
 import { WebRtcClient } from './../proto/webrtc/WebRtc';
 
-/**
- * Returns a gPRC client singleton
- * @returns {WebRtcClient}
- * @todo make protoPath and server env vars
- */
-function getClient(): WebRtcClient {
-  const protoPath = './../../rust/server/proto/webrtc.proto';
-  const server = '[::]:50051';
-  const packageDefinition = protoLoader.loadSync(protoPath, {
-    keepCase: true,
-    longs: String,
-    enums: String,
-    defaults: true,
-    oneofs: true,
-  });
-  const proto = grpc.loadPackageDefinition(
-    packageDefinition,
-  ) as unknown as ProtoGrpcType;
+export class Client {
+  public clients: { [key: number]: WebRtcClient };
+  private current: number = 0;
 
-  return new proto.webrtc.WebRtc(server, grpc.credentials.createInsecure());
+  constructor(private servers: string[]) {
+    this.clients = {};
+    this.initClients();
+  }
+
+  initClients() {
+    this.servers.forEach((server, index) => {
+      this.clients[index] = this.newClient(server);
+    });
+  }
+
+  nextClient(): WebRtcClient {
+    const client = this.clients[this.current];
+    this.current = ++this.current % this.servers.length;
+    return client;
+  }
+
+  /**
+   * Returns a gPRC client
+   * @returns {WebRtcClient}
+   * @todo make protoPath an env var
+   */
+  newClient(server: string): WebRtcClient {
+    const protoPath = './../../rust/server/proto/webrtc.proto';
+    const packageDefinition = protoLoader.loadSync(protoPath, {
+      keepCase: true,
+      longs: String,
+      enums: String,
+      defaults: true,
+      oneofs: true,
+    });
+    const proto = grpc.loadPackageDefinition(
+      packageDefinition,
+    ) as unknown as ProtoGrpcType;
+
+    return new proto.webrtc.WebRtc(server, grpc.credentials.createInsecure());
+  }
 }
-
-export const client = getClient();
