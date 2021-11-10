@@ -4,11 +4,10 @@ import { ProtoGrpcType } from './../proto/webrtc';
 import { WebRtcClient } from './../proto/webrtc/WebRtc';
 
 export class Client {
-  public clients: { [key: number]: WebRtcClient };
+  public clients: { [key: number]: WebRtcClient } = {};
   private current: number = 0;
 
   constructor(private servers: string[]) {
-    this.clients = {};
     this.initClients();
   }
 

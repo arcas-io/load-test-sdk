@@ -3,7 +3,7 @@ import { answer } from '../fixtures/sdp';
 
 const SESSION_NAME = 'From Node SDK';
 const PEER_CONNECTION_NAME = 'PC from Node SDK';
-const SERVERS = ['[::]:50051', '[::]:50051', '[::]:50051'];
+const SERVERS = ['[::]:50051'];
 
 async function newSession(): Promise<Session> {
   return await Session.create({ name: SESSION_NAME, servers: SERVERS });

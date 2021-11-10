@@ -16,7 +16,7 @@ export type PeerConnectionSdp = {
 export class Session {
   public callbacks: Callbacks;
   public client: Client;
-  private peerConnections: { [key: string]: PeerConnection };
+  private peerConnections: { [key: string]: PeerConnection } = {};
   private queues: Map<string, Queue> = new Map();
 
   constructor(
@@ -44,7 +44,7 @@ export class Session {
     for (const index in session.client.clients) {
       const client = session.client.clients[index];
       const createSession = promisify(client.createSession).bind(client);
-      await createSession(options);
+      await createSession({ session_id: sessionId, ...options });
     }
 
     return session;
@@ -82,10 +82,20 @@ export class Session {
     name: string;
   }): Promise<CreatePeerConnectionResponse> {
     const client = this.client.nextClient();
+    const peerConnectionId = nanoid();
+    this.peerConnections[peerConnectionId] = new PeerConnection(
+      peerConnectionId,
+      client,
+    );
     const createPeerConnection = promisify(client.createPeerConnection).bind(
       client,
     );
-    return await createPeerConnection({ session_id: this.id, ...options });
+
+    return await createPeerConnection({
+      session_id: this.id,
+      peer_connection_id: peerConnectionId,
+      ...options,
+    });
   }
 
   /**

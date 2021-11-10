@@ -1,4 +1,4 @@
-import { setup } from '../src/shim_rtc_peer_connection';
+// import { setup } from '../src/shim_rtc_peer_connection';
 import { provider } from '../build/src/mediasoup.js';
 import { Device } from 'mediasoup-client';
 
