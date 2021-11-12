@@ -1,5 +1,4 @@
 import { Session } from '../src/session';
-import { answer } from '../fixtures/sdp';
 
 const SESSION_NAME = 'From Node SDK';
 const PEER_CONNECTION_NAME = 'PC from Node SDK';
@@ -74,11 +73,11 @@ describe('Session.createAnswer function', () => {
     const { peer_connection_id }: any = await session.createPeerConnection({
       name: PEER_CONNECTION_NAME,
     });
-
+    const offer = await session.createOffer({ peer_connection_id });
     const options = {
       peer_connection_id,
-      sdp_type: 'answer',
-      sdp: answer,
+      sdp_type: offer.sdp_type,
+      sdp: offer.sdp,
     };
 
     // setting the remote description first is required for creating an answer
@@ -116,10 +115,11 @@ describe('Session.setRemoteDescription function', () => {
     const { peer_connection_id }: any = await session.createPeerConnection({
       name: PEER_CONNECTION_NAME,
     });
+    const offer = await session.createOffer({ peer_connection_id });
     const options = {
       peer_connection_id,
-      sdp_type: 'answer',
-      sdp: answer,
+      sdp_type: offer.sdp_type,
+      sdp: offer.sdp,
     };
 
     await expect(session.setRemoteDescription(options)).resolves.not.toThrow();
