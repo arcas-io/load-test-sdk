@@ -6,6 +6,6 @@ describe('Client.nextClient function', () => {
   it('gets the next client', async () => {
     const client = new Client(SERVERS);
     const nextClient = client.nextClient();
-    expect(nextClient).toHaveValue;
+    expect(nextClient).toBe(client.clients[1]);
   });
 });

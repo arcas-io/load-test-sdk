@@ -5,7 +5,7 @@ import { WebRtcClient } from './../proto/webrtc/WebRtc';
 
 export class Client {
   public clients: { [key: number]: WebRtcClient } = {};
-  private current: number = 0;
+  private current = 0;
 
   constructor(private servers: string[]) {
     this.initClients();
@@ -19,6 +19,7 @@ export class Client {
 
   nextClient(): WebRtcClient {
     const client = this.clients[this.current];
+    console.log(`current ${this.current}`);
     this.current = ++this.current % this.servers.length;
     return client;
   }

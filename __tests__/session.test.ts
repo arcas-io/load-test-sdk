@@ -2,7 +2,7 @@ import { Session } from '../src/session';
 
 const SESSION_NAME = 'From Node SDK';
 const PEER_CONNECTION_NAME = 'PC from Node SDK';
-const SERVERS = ['[::]:50051'];
+const SERVERS = ['[::]:50051', '[::]:50052'];
 
 async function newSession(): Promise<Session> {
   return await Session.create({ name: SESSION_NAME, servers: SERVERS });
@@ -119,7 +119,7 @@ describe('Session', () => {
     ).resolves.not.toThrow();
   });
 
-  it('adds a track', async () => {
+  it('adds a transceiver', async () => {
     const session = await newSession();
     await session.start();
     const { peer_connection_id }: any = await session.createPeerConnection({

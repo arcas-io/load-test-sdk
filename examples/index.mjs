@@ -4,14 +4,14 @@ import { provider, createTransport } from './../build/src/mediasoup.js';
 const TEST_TIME_MS = 50000;
 const STATS_INCREMENTS_MS = 1000;
 const SOCKET_URI = 'https://127.0.0.1:3000';
-const SERVERS = ['[::]:50051', '[::]:50051', '[::]:50051'];
+const SERVERS = ['[::]:50051', '[::]:50052', '[::]:50053'];
 
 let TEST_COUNTER_MS = 0;
 
 // wait for the device to load
 // hack for now, switch to events
 const socketConnectCallback = async (device) => {
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 30; i++) {
     const peerConnectionName = `Peer Connection ${i + 1}`;
     const { peer_connection_id } = await session.createPeerConnection({
       name: peerConnectionName,
