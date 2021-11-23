@@ -3,6 +3,7 @@
 
 import { Device } from 'mediasoup-client';
 import { io } from 'socket.io-client';
+import { v4 } from 'uuid';
 
 let device;
 let stream;
@@ -53,7 +54,9 @@ export async function provider(uri, callback) {
 
 export async function createTransport(device, peerConnectionId) {
   console.log('MediaSoup: send to socket: createProducerTransport');
+  let producerId = v4();
   const data: any = await socketRequest('createProducerTransport', {
+    id: producerId,
     forceTcp: false,
     rtpCapabilities: device.rtpCapabilities,
   });
@@ -66,7 +69,7 @@ export async function createTransport(device, peerConnectionId) {
 
   transport.on('connect', async ({ dtlsParameters }, callback, errback) => {
     console.log('MediaSoup: send to socket: connectProducerTransport');
-    socketRequest('connectProducerTransport', { dtlsParameters })
+    socketRequest('connectProducerTransport', { dtlsParameters, id: producerId })
       .then(callback)
       .catch(errback);
   });
@@ -76,6 +79,7 @@ export async function createTransport(device, peerConnectionId) {
     async ({ kind, rtpParameters }, callback, errback) => {
       try {
         const { id }: any = await socketRequest('produce', {
+          id: producerId,
           transportId: transport.id,
           kind,
           rtpParameters,
@@ -123,7 +127,7 @@ async function getUserMedia(_transport, peerConnectionId) {
   console.log('MediaSoup: getUserMedia()');
   const stream = {
     getVideoTracks: () => [
-      { kind: 'video', id: peerConnectionId, addEventListener: () => {} },
+      { kind: 'video', id: peerConnectionId, addEventListener: () => { } },
     ],
   };
   return stream;
