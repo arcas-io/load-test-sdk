@@ -4,7 +4,7 @@ import { provider, createTransport } from './../build/src/mediasoup.js';
 const TEST_TIME_MS = 5000000;
 const STATS_INCREMENTS_MS = 5000;
 const SOCKET_URI = 'https://127.0.0.1:3000';
-const SERVERS = ['[::]:50051', '[::]:50052', '[::]:50053'];
+const SERVERS = ['[::]:50051'];
 
 let TEST_COUNTER_MS = 0;
 
