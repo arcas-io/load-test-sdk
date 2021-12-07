@@ -1,9 +1,9 @@
 import { Session } from './../build/src/main.js';
 import { provider, createTransport } from './../build/src/mediasoup.js';
 
-const PEER_CONNECTIONS_PER_STEP = 100;
-const PAUSE_BETWEEN_STEP_MS = 120000; // 2 minutes
-const NUM_STEPS = 5;
+const PEER_CONNECTIONS_PER_STEP = 500;
+const PAUSE_BETWEEN_STEP_MS = 10000; // 2 minutes
+const NUM_STEPS = 10;
 const SOCKET_URI = 'https://127.0.0.1:3000';
 
 const timer = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -15,15 +15,16 @@ const socketConnectCallback = async (device) => {
     console.log(`starting step ${step}`);
 
     for (let i = 0; i < PEER_CONNECTIONS_PER_STEP; i++) {
-      const peerConnectionName = `Peer Connection ${
-        step * PEER_CONNECTIONS_PER_STEP + i + 1
-      }`;
+      const peerConnectionName = `Peer Connection ${step * PEER_CONNECTIONS_PER_STEP + i + 1
+        }`;
+      console.log('start ', i);
       const { peer_connection_id } = await session.createPeerConnection({
         name: peerConnectionName,
       });
 
       console.log(`creating ${peerConnectionName}`);
       await createTransport(device, peer_connection_id);
+      console.log('start end', i);
     }
 
     console.log(`\npausing ${PAUSE_BETWEEN_STEP_MS / 1000} seconds\n`);
