@@ -75,6 +75,18 @@ export class Session {
   }
 
   /**
+   * Gets the current stats for a session/test
+   * @returns {Promise<void>}
+   */
+  async getStats(): Promise<void> {
+    for (const index in this.client.clients) {
+      const client = this.client.clients[index];
+      const getStats = promisify(client.getStats).bind(client);
+      return await getStats({ session_id: this.id });
+    }
+  }
+
+  /**
    * Creates a peer connection
    * @returns {Promise<CreatePeerConnectionResponse>}
    */

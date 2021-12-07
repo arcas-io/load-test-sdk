@@ -19,7 +19,7 @@ export class Client {
 
   nextClient(): WebRtcClient {
     const client = this.clients[this.current];
-    console.log(`current ${this.current}`);
+    // console.log(`current ${this.current}`);
     this.current = ++this.current % this.servers.length;
     return client;
   }
