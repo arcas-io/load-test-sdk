@@ -4,7 +4,7 @@ import { provider, createTransport } from './../build/src/mediasoup.js';
 const PEER_CONNECTIONS_PER_STEP = 500;
 const PAUSE_BETWEEN_STEP_MS = 10000; // 2 minutes
 const NUM_STEPS = 10;
-const SOCKET_URI = 'https://127.0.0.1:3000';
+const SOCKET_URI = process.env.SOCKET_URI || 'https://127.0.0.1:3000';
 
 const timer = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -36,7 +36,7 @@ const socketConnectCallback = async (device) => {
   process.exit();
 };
 
-let session = await Session.create({ name: 'First Session' });
+let session = await Session.create({ name: 'First Session', servers: ['[::]:50051'] });
 console.log(`session created (${session.id}, ${session.name})`);
 
 await session.start();
