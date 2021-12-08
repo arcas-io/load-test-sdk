@@ -1,6 +1,5 @@
 /* eslint-disable */
 /* tslint-disable */
-
 import { Session } from './session';
 
 // TODO: remove unused once this implementation is complete
@@ -44,9 +43,9 @@ class ShimRTCPeerConnection {
   readonly signalingState: RTCSignalingState;
 
   constructor(configuration: RTCConfiguration) {
-    console.log(
-      `ShimRTCPeerConnection::constructor() ${JSON.stringify(configuration)}`,
-    );
+    // console.log(
+    //   `ShimRTCPeerConnection::constructor() ${JSON.stringify(configuration)}`,
+    // );
   }
 
   static generateCertificate(
@@ -65,7 +64,7 @@ class ShimRTCPeerConnection {
     track: MediaStreamTrack,
     ..._streams: MediaStream[]
   ): Promise<any> {
-    console.log('ShimRTCPeerConnection::addTrack()', track);
+    // console.log('ShimRTCPeerConnection::addTrack()', track);
 
     try {
       return await (global as any).session.addTrack({
@@ -82,9 +81,9 @@ class ShimRTCPeerConnection {
     trackOrKind: MediaStreamTrack | string,
     _init?: RTCRtpTransceiverInit,
   ): Promise<RTCRtpTransceiver> {
-    console.log(
-      `addTransceiver::addTransceiver() ${JSON.stringify(trackOrKind)}`,
-    );
+    // console.log(
+    //   `addTransceiver::addTransceiver() ${JSON.stringify(trackOrKind)}`,
+    // );
     this.peerConnectionId = (trackOrKind as any).id;
 
     if (_init) {
@@ -98,7 +97,7 @@ class ShimRTCPeerConnection {
         throw e;
       }
     } else {
-      console.log("just getting capabilities, don't add transceiver");
+      // console.log("just getting capabilities, don't add transceiver");
     }
 
     return {} as RTCRtpTransceiver;
@@ -109,7 +108,7 @@ class ShimRTCPeerConnection {
   }
 
   async createAnswer(options?: RTCOfferAnswerOptions): Promise<any> {
-    console.log('ShimRTCPeerConnection::createAnswer()', options);
+    // console.log('ShimRTCPeerConnection::createAnswer()', options);
 
     try {
       let answer = await (global as any).session.createAnswer({
@@ -131,7 +130,7 @@ class ShimRTCPeerConnection {
   }
 
   async createOffer(_options?: RTCOfferAnswerOptions): Promise<any> {
-    console.log('ShimRTCPeerConnection::createOffer()');
+    // console.log('ShimRTCPeerConnection::createOffer()');
 
     let offer;
 
@@ -197,7 +196,7 @@ class ShimRTCPeerConnection {
   async setLocalDescription(
     description?: RTCSessionDescriptionInit,
   ): Promise<void> {
-    console.log('ShimRTCPeerConnection::setLocalDescription()');
+    // console.log('ShimRTCPeerConnection::setLocalDescription()');
 
     try {
       const options = {
@@ -217,7 +216,7 @@ class ShimRTCPeerConnection {
   async setRemoteDescription(
     description: RTCSessionDescriptionInit,
   ): Promise<void> {
-    console.log('ShimRTCPeerConnection::setRemoteDescription()');
+    // console.log('ShimRTCPeerConnection::setRemoteDescription()');
 
     const options = {
       peer_connection_id: this.peerConnectionId,
@@ -243,7 +242,7 @@ class ShimRTCPeerConnection {
     ) => any,
     _options?: boolean | AddEventListenerOptions,
   ): void {
-    console.log('ShimRTCPeerConnection::addEventListener()', _type, _listener);
+    // console.log('ShimRTCPeerConnection::addEventListener()', _type, _listener);
   }
 
   removeEventListener<K extends keyof RTCPeerConnectionEventMap>(
@@ -268,7 +267,7 @@ class ShimMediaStream {
   onaddtrack: ((this: MediaStream, ev: MediaStreamTrackEvent) => any) | null;
   onremovetrack: ((this: MediaStream, ev: MediaStreamTrackEvent) => any) | null;
   addTrack(track: MediaStreamTrack): void {
-    console.log('ShimMediaStream::addTrack()', track);
+    // console.log('ShimMediaStream::addTrack()', track);
     // const { id, label } = track;
   }
 

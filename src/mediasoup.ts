@@ -123,8 +123,8 @@ export async function createTransport(device, peerConnectionId) {
   }
 }
 
-async function getUserMedia(_transport, peerConnectionId) {
-  console.log('MediaSoup: getUserMedia()');
+export async function getUserMedia(_transport, peerConnectionId) {
+  // console.log('MediaSoup: getUserMedia()');
   const stream = {
     getVideoTracks: () => [
       { kind: 'video', id: peerConnectionId, addEventListener: () => { } },
