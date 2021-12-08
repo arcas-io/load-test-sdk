@@ -13,6 +13,10 @@ import type { CreateSessionResponse as _webrtc_CreateSessionResponse, CreateSess
 import type { Empty as _webrtc_Empty, Empty__Output as _webrtc_Empty__Output } from '../webrtc/Empty';
 import type { GetStatsRequest as _webrtc_GetStatsRequest, GetStatsRequest__Output as _webrtc_GetStatsRequest__Output } from '../webrtc/GetStatsRequest';
 import type { GetStatsResponse as _webrtc_GetStatsResponse, GetStatsResponse__Output as _webrtc_GetStatsResponse__Output } from '../webrtc/GetStatsResponse';
+import type { GetTransceiversRequest as _webrtc_GetTransceiversRequest, GetTransceiversRequest__Output as _webrtc_GetTransceiversRequest__Output } from '../webrtc/GetTransceiversRequest';
+import type { GetTransceiversResponse as _webrtc_GetTransceiversResponse, GetTransceiversResponse__Output as _webrtc_GetTransceiversResponse__Output } from '../webrtc/GetTransceiversResponse';
+import type { ObserverRequest as _webrtc_ObserverRequest, ObserverRequest__Output as _webrtc_ObserverRequest__Output } from '../webrtc/ObserverRequest';
+import type { PeerConnectionObserverMessage as _webrtc_PeerConnectionObserverMessage, PeerConnectionObserverMessage__Output as _webrtc_PeerConnectionObserverMessage__Output } from '../webrtc/PeerConnectionObserverMessage';
 import type { SetSDPRequest as _webrtc_SetSDPRequest, SetSDPRequest__Output as _webrtc_SetSDPRequest__Output } from '../webrtc/SetSDPRequest';
 import type { SetSDPResponse as _webrtc_SetSDPResponse, SetSDPResponse__Output as _webrtc_SetSDPResponse__Output } from '../webrtc/SetSDPResponse';
 import type { StartSessionRequest as _webrtc_StartSessionRequest, StartSessionRequest__Output as _webrtc_StartSessionRequest__Output } from '../webrtc/StartSessionRequest';
@@ -82,6 +86,20 @@ export interface WebRtcClient extends grpc.Client {
   getStats(argument: _webrtc_GetStatsRequest, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_GetStatsResponse__Output) => void): grpc.ClientUnaryCall;
   getStats(argument: _webrtc_GetStatsRequest, callback: (error?: grpc.ServiceError, result?: _webrtc_GetStatsResponse__Output) => void): grpc.ClientUnaryCall;
   
+  GetTransceivers(argument: _webrtc_GetTransceiversRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_GetTransceiversResponse__Output) => void): grpc.ClientUnaryCall;
+  GetTransceivers(argument: _webrtc_GetTransceiversRequest, metadata: grpc.Metadata, callback: (error?: grpc.ServiceError, result?: _webrtc_GetTransceiversResponse__Output) => void): grpc.ClientUnaryCall;
+  GetTransceivers(argument: _webrtc_GetTransceiversRequest, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_GetTransceiversResponse__Output) => void): grpc.ClientUnaryCall;
+  GetTransceivers(argument: _webrtc_GetTransceiversRequest, callback: (error?: grpc.ServiceError, result?: _webrtc_GetTransceiversResponse__Output) => void): grpc.ClientUnaryCall;
+  getTransceivers(argument: _webrtc_GetTransceiversRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_GetTransceiversResponse__Output) => void): grpc.ClientUnaryCall;
+  getTransceivers(argument: _webrtc_GetTransceiversRequest, metadata: grpc.Metadata, callback: (error?: grpc.ServiceError, result?: _webrtc_GetTransceiversResponse__Output) => void): grpc.ClientUnaryCall;
+  getTransceivers(argument: _webrtc_GetTransceiversRequest, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_GetTransceiversResponse__Output) => void): grpc.ClientUnaryCall;
+  getTransceivers(argument: _webrtc_GetTransceiversRequest, callback: (error?: grpc.ServiceError, result?: _webrtc_GetTransceiversResponse__Output) => void): grpc.ClientUnaryCall;
+  
+  Observer(argument: _webrtc_ObserverRequest, metadata: grpc.Metadata, options?: grpc.CallOptions): grpc.ClientReadableStream<_webrtc_PeerConnectionObserverMessage__Output>;
+  Observer(argument: _webrtc_ObserverRequest, options?: grpc.CallOptions): grpc.ClientReadableStream<_webrtc_PeerConnectionObserverMessage__Output>;
+  observer(argument: _webrtc_ObserverRequest, metadata: grpc.Metadata, options?: grpc.CallOptions): grpc.ClientReadableStream<_webrtc_PeerConnectionObserverMessage__Output>;
+  observer(argument: _webrtc_ObserverRequest, options?: grpc.CallOptions): grpc.ClientReadableStream<_webrtc_PeerConnectionObserverMessage__Output>;
+  
   SetLocalDescription(argument: _webrtc_SetSDPRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_SetSDPResponse__Output) => void): grpc.ClientUnaryCall;
   SetLocalDescription(argument: _webrtc_SetSDPRequest, metadata: grpc.Metadata, callback: (error?: grpc.ServiceError, result?: _webrtc_SetSDPResponse__Output) => void): grpc.ClientUnaryCall;
   SetLocalDescription(argument: _webrtc_SetSDPRequest, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_SetSDPResponse__Output) => void): grpc.ClientUnaryCall;
@@ -135,6 +153,10 @@ export interface WebRtcHandlers extends grpc.UntypedServiceImplementation {
   
   GetStats: grpc.handleUnaryCall<_webrtc_GetStatsRequest__Output, _webrtc_GetStatsResponse>;
   
+  GetTransceivers: grpc.handleUnaryCall<_webrtc_GetTransceiversRequest__Output, _webrtc_GetTransceiversResponse>;
+  
+  Observer: grpc.handleServerStreamingCall<_webrtc_ObserverRequest__Output, _webrtc_PeerConnectionObserverMessage>;
+  
   SetLocalDescription: grpc.handleUnaryCall<_webrtc_SetSDPRequest__Output, _webrtc_SetSDPResponse>;
   
   SetRemoteDescription: grpc.handleUnaryCall<_webrtc_SetSDPRequest__Output, _webrtc_SetSDPResponse>;
@@ -153,6 +175,8 @@ export interface WebRtcDefinition extends grpc.ServiceDefinition {
   CreatePeerConnection: MethodDefinition<_webrtc_CreatePeerConnectionRequest, _webrtc_CreatePeerConnectionResponse, _webrtc_CreatePeerConnectionRequest__Output, _webrtc_CreatePeerConnectionResponse__Output>
   CreateSession: MethodDefinition<_webrtc_CreateSessionRequest, _webrtc_CreateSessionResponse, _webrtc_CreateSessionRequest__Output, _webrtc_CreateSessionResponse__Output>
   GetStats: MethodDefinition<_webrtc_GetStatsRequest, _webrtc_GetStatsResponse, _webrtc_GetStatsRequest__Output, _webrtc_GetStatsResponse__Output>
+  GetTransceivers: MethodDefinition<_webrtc_GetTransceiversRequest, _webrtc_GetTransceiversResponse, _webrtc_GetTransceiversRequest__Output, _webrtc_GetTransceiversResponse__Output>
+  Observer: MethodDefinition<_webrtc_ObserverRequest, _webrtc_PeerConnectionObserverMessage, _webrtc_ObserverRequest__Output, _webrtc_PeerConnectionObserverMessage__Output>
   SetLocalDescription: MethodDefinition<_webrtc_SetSDPRequest, _webrtc_SetSDPResponse, _webrtc_SetSDPRequest__Output, _webrtc_SetSDPResponse__Output>
   SetRemoteDescription: MethodDefinition<_webrtc_SetSDPRequest, _webrtc_SetSDPResponse, _webrtc_SetSDPRequest__Output, _webrtc_SetSDPResponse__Output>
   StartSession: MethodDefinition<_webrtc_StartSessionRequest, _webrtc_Empty, _webrtc_StartSessionRequest__Output, _webrtc_Empty__Output>

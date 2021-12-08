@@ -27,8 +27,8 @@ export async function provider(uri, callback) {
   // upon connection to the SFU, begin loading the device
   socket.on('connect', async () => {
     console.log('MediaSoup: connected to SFU websocket');
-    const rtdCapabilities = await socketRequest('getRouterRtpCapabilities');
-    await loadDevice(rtdCapabilities);
+    const rtpCapabilities = await socketRequest('getRouterRtpCapabilities');
+    device = await loadDevice(rtpCapabilities);
 
     if (device.canProduce('video')) {
       console.log('MediaSoup: can produce video');
@@ -52,7 +52,7 @@ export async function provider(uri, callback) {
   });
 }
 
-export async function createTransport(device, peerConnectionId) {
+export async function createTransport(device) {
   console.log('MediaSoup: send to socket: createProducerTransport');
   let producerId = v4();
   const data: any = await socketRequest('createProducerTransport', {
@@ -113,7 +113,7 @@ export async function createTransport(device, peerConnectionId) {
   });
 
   try {
-    stream = await getUserMedia(transport, peerConnectionId);
+    stream = await getUserMedia(transport);
     const track = stream.getVideoTracks()[0];
     const params = { track };
     // const _producer = await transport.produce(params);
@@ -123,11 +123,10 @@ export async function createTransport(device, peerConnectionId) {
   }
 }
 
-export async function getUserMedia(_transport, peerConnectionId) {
-  // console.log('MediaSoup: getUserMedia()');
+async function getUserMedia(_transport) {
   const stream = {
     getVideoTracks: () => [
-      { kind: 'video', id: peerConnectionId, addEventListener: () => { } },
+      { kind: 'video', id: '', addEventListener: () => { } },
     ],
   };
   return stream;
@@ -137,6 +136,8 @@ async function loadDevice(routerRtpCapabilities) {
   try {
     device = new Device();
     await device.load({ routerRtpCapabilities });
+    console.log('de vice', device);
+    return device;
   } catch (error) {
     if (error.name === 'UnsupportedError') {
       console.error('MediaSoup: browser not supported');

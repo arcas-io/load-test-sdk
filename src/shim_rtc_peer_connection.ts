@@ -1,11 +1,40 @@
 /* eslint-disable */
 /* tslint-disable */
+
+import { ClientReadableStream } from '@grpc/grpc-js';
+import { nanoid } from 'nanoid';
+import { PeerConnectionObserverMessage__Output } from '../proto/webrtc/PeerConnectionObserverMessage';
+import { Queue } from './queue';
 import { Session } from './session';
 
-// TODO: remove unused once this implementation is complete
+class ShimTrack {
+  addEventListener() {
+  }
+}
 
-class ShimRTCPeerConnection {
-  peerConnectionId: String;
+class ShimTransceiver {
+  mid: number;
+  currentDirection = 'sendrecv';
+  direction: string;
+  receiver = { track: new ShimTrack() }
+  sender = {};
+
+  constructor(mid: number, direction: string) {
+    this.mid = mid;
+    this.direction = direction;
+    this.currentDirection = direction;
+  }
+
+  setDirection() {
+    // todo: make the GRPC call to do set direction
+  }
+}
+
+export class ShimRTCPeerConnection {
+  lastMID = 0;
+  peerConnectionId: string;
+  queue: Queue;
+  #transceivers = [];
 
   readonly canTrickleIceCandidates: boolean | null;
   readonly connectionState: RTCPeerConnectionState;
@@ -42,10 +71,38 @@ class ShimRTCPeerConnection {
   readonly sctp: any;
   readonly signalingState: RTCSignalingState;
 
-  constructor(configuration: RTCConfiguration) {
-    // console.log(
-    //   `ShimRTCPeerConnection::constructor() ${JSON.stringify(configuration)}`,
-    // );
+  private getSession(): Session {
+    return (global as any).session;
+  }
+
+  async startObserving(observer: ClientReadableStream<PeerConnectionObserverMessage__Output>) {
+    observer.on('data', (data) => {
+      switch (data.event) {
+        case 'ice_candidate':
+          break;
+        case 'video_transceiver':
+          this.#transceivers.push(new ShimTransceiver(data.video_transceiver.mid, data.video_transceiver.direction));
+          break;
+      }
+    })
+  }
+
+  constructor(_configuration: RTCConfiguration) {
+    this.queue = new Queue();
+    let peerConnectionId = nanoid();
+    // Create the peer connection directly on the server...
+    this.queue.queue_call(async () => {
+      // TODO: Support passing ICE servers... This is important.
+      await this.getSession().createPeerConnection({
+        peerConnectionId,
+        name: 'ShimRTCPeerConnection',
+      });
+
+      let observer = this.getSession().observe({ peer_connection_id: peerConnectionId });
+      this.startObserving(observer);
+    })
+
+    this.peerConnectionId = peerConnectionId;
   }
 
   static generateCertificate(
@@ -66,29 +123,28 @@ class ShimRTCPeerConnection {
   ): Promise<any> {
     // console.log('ShimRTCPeerConnection::addTrack()', track);
 
-    try {
-      return await (global as any).session.addTrack({
-        peer_connection_id: this.peerConnectionId,
-        ...track,
-      });
-    } catch (e) {
-      console.error('cbAddTrack error: ', e.details);
-      throw e;
-    }
+    return this.queue.queue_call(async () => {
+      try {
+        return await this.getSession().addTrack({
+          peer_connection_id: this.peerConnectionId,
+          track_id: track.id,
+          track_label: track.label,
+        });
+      } catch (e) {
+        console.error('cbAddTrack error: ', e.details);
+        throw e;
+      }
+    });
   }
 
-  async addTransceiver(
+  addTransceiver(
     trackOrKind: MediaStreamTrack | string,
-    _init?: RTCRtpTransceiverInit,
+    init?: RTCRtpTransceiverInit,
   ): Promise<RTCRtpTransceiver> {
-    // console.log(
-    //   `addTransceiver::addTransceiver() ${JSON.stringify(trackOrKind)}`,
-    // );
-    this.peerConnectionId = (trackOrKind as any).id;
-
-    if (_init) {
+    let mid = this.lastMID++;
+    this.queue.queue_call(async () => {
       try {
-        return await (global as any).session.addTransceiver({
+        return await this.getSession().addTransceiver({
           peer_connection_id: this.peerConnectionId,
           ...(trackOrKind as any),
         });
@@ -96,11 +152,10 @@ class ShimRTCPeerConnection {
         console.error('cbAddTransceiver error: ', e.details);
         throw e;
       }
-    } else {
-      // console.log("just getting capabilities, don't add transceiver");
-    }
-
-    return {} as RTCRtpTransceiver;
+    });
+    let transceiver = (new ShimTransceiver(mid, init && init.direction ? init.direction : 'sendrecv') as any);
+    this.#transceivers.push(transceiver);
+    return transceiver as any;
   }
 
   close(): void {
@@ -110,16 +165,19 @@ class ShimRTCPeerConnection {
   async createAnswer(options?: RTCOfferAnswerOptions): Promise<any> {
     // console.log('ShimRTCPeerConnection::createAnswer()', options);
 
-    try {
-      let answer = await (global as any).session.createAnswer({
-        peer_connection_id: this.peerConnectionId,
-        ...options,
-      });
-      return { sdp: answer.sdp, type: 'answer' };
-    } catch (e) {
-      console.error('cbCreateAnswer error: ', e.details);
-      throw e;
-    }
+    return this.queue.queue_call(async () => {
+
+      try {
+        let answer = await (global as any).session.createAnswer({
+          peer_connection_id: this.peerConnectionId,
+          ...options,
+        });
+        return { sdp: answer.sdp, type: 'answer' };
+      } catch (e) {
+        console.error('cbCreateAnswer error: ', e.details);
+        throw e;
+      }
+    });
   }
 
   createDataChannel(
@@ -130,16 +188,9 @@ class ShimRTCPeerConnection {
   }
 
   async createOffer(_options?: RTCOfferAnswerOptions): Promise<any> {
-    // console.log('ShimRTCPeerConnection::createOffer()');
-
-    let offer;
-
-    // if the peer connection is undefined, then the client is just detecting capabilities
-    if (!this.peerConnectionId) {
-      offer = {
-        sdp: 'v=0\r\no=- 6188226392136919752 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\na=group:BUNDLE 0\r\na=extmap-allow-mixed\r\na=msid-semantic: WMS 0\r\nm=video 9 UDP/TLS/RTP/SAVPF 96 97 98 99 100 101 35 36 127 123 125\r\nc=IN IP4 0.0.0.0\r\na=rtcp:9 IN IP4 0.0.0.0\r\na=ice-ufrag:/edD\r\na=ice-pwd:DfTbTpuC4rnmVSdD5UgiN+DU\r\na=ice-options:trickle\r\na=fingerprint:sha-256 98:E0:88:48:B9:50:81:AE:DA:CE:8B:62:F8:AA:3F:92:AB:B0:F2:B2:15:73:D3:CF:E1:D5:5B:29:CF:E1:DE:42\r\na=setup:actpass\r\na=mid:0\r\na=extmap:1 urn:ietf:params:rtp-hdrext:toffset\r\na=extmap:2 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\r\na=extmap:3 urn:3gpp:video-orientation\r\na=extmap:4 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\r\na=extmap:5 http://www.webrtc.org/experiments/rtp-hdrext/playout-delay\r\na=extmap:6 http://www.webrtc.org/experiments/rtp-hdrext/video-content-type\r\na=extmap:7 http://www.webrtc.org/experiments/rtp-hdrext/video-timing\r\na=extmap:8 http://www.webrtc.org/experiments/rtp-hdrext/color-space\r\na=extmap:9 urn:ietf:params:rtp-hdrext:sdes:mid\r\na=extmap:10 urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id\r\na=extmap:11 urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id\r\na=sendrecv\r\na=msid:0 test\r\na=rtcp-mux\r\na=rtcp-rsize\r\na=rtpmap:96 VP8/90000\r\na=rtcp-fb:96 goog-remb\r\na=rtcp-fb:96 transport-cc\r\na=rtcp-fb:96 ccm fir\r\na=rtcp-fb:96 nack\r\na=rtcp-fb:96 nack pli\r\na=rtpmap:97 rtx/90000\r\na=fmtp:97 apt=96\r\na=rtpmap:98 VP9/90000\r\na=rtcp-fb:98 goog-remb\r\na=rtcp-fb:98 transport-cc\r\na=rtcp-fb:98 ccm fir\r\na=rtcp-fb:98 nack\r\na=rtcp-fb:98 nack pli\r\na=fmtp:98 profile-id=0\r\na=rtpmap:99 rtx/90000\r\na=fmtp:99 apt=98\r\na=rtpmap:100 VP9/90000\r\na=rtcp-fb:100 goog-remb\r\na=rtcp-fb:100 transport-cc\r\na=rtcp-fb:100 ccm fir\r\na=rtcp-fb:100 nack\r\na=rtcp-fb:100 nack pli\r\na=fmtp:100 profile-id=2\r\na=rtpmap:101 rtx/90000\r\na=fmtp:101 apt=100\r\na=rtpmap:35 AV1X/90000\r\na=rtcp-fb:35 goog-remb\r\na=rtcp-fb:35 transport-cc\r\na=rtcp-fb:35 ccm fir\r\na=rtcp-fb:35 nack\r\na=rtcp-fb:35 nack pli\r\na=rtpmap:36 rtx/90000\r\na=fmtp:36 apt=35\r\na=rtpmap:127 red/90000\r\na=rtpmap:123 rtx/90000\r\na=fmtp:123 apt=127\r\na=rtpmap:125 ulpfec/90000\r\na=ssrc-group:FID 2767310433 1045618324\r\na=ssrc:2767310433 cname:gfaW0YxVdEpFVa7w\r\na=ssrc:2767310433 msid:0 test\r\na=ssrc:2767310433 mslabel:0\r\na=ssrc:2767310433 label:test\r\na=ssrc:1045618324 cname:gfaW0YxVdEpFVa7w\r\na=ssrc:1045618324 msid:0 test\r\na=ssrc:1045618324 mslabel:0\r\na=ssrc:1045618324 label:test\r\n',
-      };
-    } else {
+    console.log('ShimRTCPeerConnection::createOffer()');
+    return this.queue.queue_call(async () => {
+      let offer;
       try {
         offer = await (global as any).session.createOffer({
           peer_connection_id: this.peerConnectionId,
@@ -148,9 +199,9 @@ class ShimRTCPeerConnection {
         console.error('cbCreateOffer error: ', e.details);
         throw e;
       }
-    }
 
-    return { sdp: offer.sdp, type: 'offer' };
+      return { sdp: offer.sdp, type: 'offer' };
+    });
   }
 
   getConfiguration(): RTCConfiguration {
@@ -174,7 +225,8 @@ class ShimRTCPeerConnection {
   }
 
   getTransceivers(): RTCRtpTransceiver[] {
-    throw new Error('todo');
+    console.log('xfoo hit', this.#transceivers);
+    return this.#transceivers;
   }
 
   removeTrack(_sender: RTCRtpSender): void {
@@ -196,21 +248,24 @@ class ShimRTCPeerConnection {
   async setLocalDescription(
     description?: RTCSessionDescriptionInit,
   ): Promise<void> {
-    // console.log('ShimRTCPeerConnection::setLocalDescription()');
-
-    try {
-      const options = {
-        peer_connection_id: this.peerConnectionId,
-        sdp: description.sdp,
-        sdp_type: description.type,
-      };
-      await (global as any).session.setLocalDescription(options);
-    } catch (e) {
-      console.error('cbSetLocalDescription error: ', e.details);
-      throw e;
-    }
 
     this.localDescription = description as RTCSessionDescription;
+    return this.queue.queue_call(async () => {
+      console.log('ShimRTCPeerConnection::setLocalDescription()');
+
+      try {
+        const options = {
+          peer_connection_id: this.peerConnectionId,
+          sdp: description.sdp,
+          sdp_type: description.type,
+        };
+        await (global as any).session.setLocalDescription(options);
+      } catch (e) {
+        console.error('cbSetLocalDescription error: ', e.details);
+        throw e;
+      }
+    });
+
   }
 
   async setRemoteDescription(
@@ -218,20 +273,22 @@ class ShimRTCPeerConnection {
   ): Promise<void> {
     // console.log('ShimRTCPeerConnection::setRemoteDescription()');
 
-    const options = {
-      peer_connection_id: this.peerConnectionId,
-      sdp: description.sdp,
-      sdp_type: description.type,
-    };
-
-    try {
-      await (global as any).session.setRemoteDescription(options);
-    } catch (e) {
-      console.error('cbSetRemoteDescription error: ', e.details);
-      throw e;
-    }
-
     this.remoteDescription = description as RTCSessionDescription;
+    return this.queue.queue_call(async () => {
+      const options = {
+        peer_connection_id: this.peerConnectionId,
+        sdp: description.sdp,
+        sdp_type: description.type,
+      };
+
+      try {
+        await (global as any).session.setRemoteDescription(options);
+      } catch (e) {
+        console.error('cbSetRemoteDescription error: ', e.details);
+        throw e;
+      }
+    });
+
   }
 
   addEventListener<K extends keyof RTCPeerConnectionEventMap>(
@@ -266,7 +323,7 @@ class ShimMediaStream {
   readonly id: string;
   onaddtrack: ((this: MediaStream, ev: MediaStreamTrackEvent) => any) | null;
   onremovetrack: ((this: MediaStream, ev: MediaStreamTrackEvent) => any) | null;
-  addTrack(track: MediaStreamTrack): void {
+  addTrack(_track: MediaStreamTrack): void {
     // console.log('ShimMediaStream::addTrack()', track);
     // const { id, label } = track;
   }

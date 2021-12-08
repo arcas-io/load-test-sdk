@@ -2,10 +2,10 @@ import { nanoid } from 'nanoid';
 import { promisify } from 'util';
 import { Client } from './client';
 import { PeerConnection } from './peerConnection';
-import { Queue } from './queue';
-import { CreatePeerConnectionResponse } from './../proto/webrtc/CreatePeerConnectionResponse';
 import { Callbacks } from './callbacks';
 import { setup } from './shim_rtc_peer_connection';
+import { ClientReadableStream } from '@grpc/grpc-js';
+import { PeerConnectionObserverMessage__Output } from '../proto/webrtc/PeerConnectionObserverMessage';
 
 export type PeerConnectionSdp = {
   peer_connection_id: string;
@@ -16,16 +16,19 @@ export type PeerConnectionSdp = {
 export class Session {
   public callbacks: Callbacks;
   public client: Client;
+  public id: string;
+  public name: string
   private peerConnections: { [key: string]: PeerConnection } = {};
-  private queues: Map<string, Queue> = new Map();
 
   constructor(
-    public id: string,
-    public name: string,
-    private servers: string[],
+    id: string,
+    name: string,
+    servers: string[],
   ) {
+    this.id = id;
+    this.name = name;
     this.callbacks = new Callbacks(this);
-    this.client = new Client(this.servers);
+    this.client = new Client(servers);
   }
 
   /**
@@ -91,10 +94,11 @@ export class Session {
    * @returns {Promise<CreatePeerConnectionResponse>}
    */
   async createPeerConnection(options: {
+    peerConnectionId: string,
     name: string;
-  }): Promise<CreatePeerConnectionResponse> {
+  }): Promise<{ peer_connection_id: string }> {
+    const { peerConnectionId } = options;
     const client = this.client.nextClient();
-    const peerConnectionId = nanoid();
     this.peerConnections[peerConnectionId] = new PeerConnection(
       peerConnectionId,
       client,
@@ -103,11 +107,13 @@ export class Session {
       client,
     );
 
-    return await createPeerConnection({
+    await createPeerConnection({
       session_id: this.id,
       peer_connection_id: peerConnectionId,
       ...options,
     });
+
+    return { peer_connection_id: peerConnectionId };
   }
 
   /**
@@ -119,9 +125,7 @@ export class Session {
   }): Promise<PeerConnectionSdp> {
     const client = this.peerConnections[options.peer_connection_id].client;
     const createOffer = promisify(client.createOffer).bind(client);
-    return this.get_queue(options.peer_connection_id).queue_call(() =>
-      createOffer({ session_id: this.id, ...options }),
-    );
+    return createOffer({ session_id: this.id, ...options });
   }
 
   /**
@@ -133,9 +137,7 @@ export class Session {
   }): Promise<PeerConnectionSdp> {
     const client = this.peerConnections[options.peer_connection_id].client;
     const createAnswer = promisify(client.createAnswer).bind(client);
-    return this.get_queue(options.peer_connection_id).queue_call(() =>
-      createAnswer({ session_id: this.id, ...options }),
-    );
+    return createAnswer({ session_id: this.id, ...options });
   }
 
   /**
@@ -156,9 +158,7 @@ export class Session {
       client,
     );
     const sdp = this.normalizeSdp(options);
-    return this.get_queue(options.peer_connection_id).queue_call(() =>
-      setLocalDescription({ session_id: this.id, ...sdp }),
-    );
+    return setLocalDescription({ session_id: this.id, ...sdp });
   }
 
   /**
@@ -171,9 +171,7 @@ export class Session {
       client,
     );
     const sdp = this.normalizeSdp(options);
-    return this.get_queue(options.peer_connection_id).queue_call(() =>
-      setRemoteDescription({ session_id: this.id, ...sdp }),
-    );
+    return setRemoteDescription({ session_id: this.id, ...sdp });
   }
 
   /**
@@ -187,9 +185,7 @@ export class Session {
   }): Promise<void> {
     const client = this.peerConnections[options.peer_connection_id].client;
     const addTrack = promisify(client.addTrack).bind(client);
-    return this.get_queue(options.peer_connection_id).queue_call(() =>
-      addTrack({ session_id: this.id, ...options }),
-    );
+    return addTrack({ session_id: this.id, ...options });
   }
 
   /**
@@ -203,15 +199,27 @@ export class Session {
   }): Promise<void> {
     const client = this.peerConnections[options.peer_connection_id].client;
     const addTransceiver = promisify(client.addTransceiver).bind(client);
-    return this.get_queue(options.peer_connection_id).queue_call(() =>
-      addTransceiver({ session_id: this.id, ...options }),
-    );
+    return addTransceiver({ session_id: this.id, ...options });
   }
 
-  private get_queue(id: string) {
-    if (!this.queues.has(id)) {
-      this.queues.set(id, new Queue());
-    }
-    return this.queues.get(id);
+  /**
+ * Adds a Transceiver
+ * @returns {Promise<void>}
+ */
+  async getTransceivers(options: {
+    peer_connection_id: string;
+    track_id: string;
+    track_label: string;
+  }): Promise<void> {
+    const client = this.peerConnections[options.peer_connection_id].client;
+    const getTransceivers = promisify(client.getTransceivers).bind(client);
+    return getTransceivers({ session_id: this.id, ...options });
   }
+
+  observe(options: {
+    peer_connection_id: string;
+  }): ClientReadableStream<PeerConnectionObserverMessage__Output> {
+    const client = this.peerConnections[options.peer_connection_id].client;
+    return client.observer({ session_id: this.id, ...options } as any);
+  };
 }

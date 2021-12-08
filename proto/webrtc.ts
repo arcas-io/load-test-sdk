@@ -25,6 +25,12 @@ export interface ProtoGrpcType {
     Empty: MessageTypeDefinition
     GetStatsRequest: MessageTypeDefinition
     GetStatsResponse: MessageTypeDefinition
+    GetTransceiversRequest: MessageTypeDefinition
+    GetTransceiversResponse: MessageTypeDefinition
+    IceCandidate: MessageTypeDefinition
+    MediaType: EnumTypeDefinition
+    ObserverRequest: MessageTypeDefinition
+    PeerConnectionObserverMessage: MessageTypeDefinition
     PeerConnectionStat: MessageTypeDefinition
     PeerConnectionStats: MessageTypeDefinition
     SDPType: EnumTypeDefinition
@@ -33,6 +39,9 @@ export interface ProtoGrpcType {
     SetSDPResponse: MessageTypeDefinition
     StartSessionRequest: MessageTypeDefinition
     StopSessionRequest: MessageTypeDefinition
+    Transceiver: MessageTypeDefinition
+    TransceiverDirection: EnumTypeDefinition
+    VideoTransceiver: MessageTypeDefinition
     WebRtc: SubtypeConstructor<typeof grpc.Client, _webrtc_WebRtcClient> & { service: _webrtc_WebRtcDefinition }
   }
 }

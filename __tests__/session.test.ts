@@ -2,7 +2,7 @@ import { Session } from '../src/session';
 
 const SESSION_NAME = 'From Node SDK';
 const PEER_CONNECTION_NAME = 'PC from Node SDK';
-const SERVERS = ['[::]:50051', '[::]:50052'];
+const SERVERS = ['[::]:50051'];
 
 async function newSession(): Promise<Session> {
   return await Session.create({ name: SESSION_NAME, servers: SERVERS });
@@ -30,7 +30,7 @@ describe('Session', () => {
     const session = await newSession();
     await session.start();
     await expect(
-      session.createPeerConnection({ name: PEER_CONNECTION_NAME }),
+      session.createPeerConnection({ name: PEER_CONNECTION_NAME, peerConnectionId: '1' }),
     ).resolves.not.toThrow();
   });
 
@@ -39,6 +39,7 @@ describe('Session', () => {
     await session.start();
     const { peer_connection_id }: any = await session.createPeerConnection({
       name: PEER_CONNECTION_NAME,
+      peerConnectionId: '1',
     });
     const options = { peer_connection_id };
     const offer = await session.createOffer(options);
@@ -55,6 +56,7 @@ describe('Session', () => {
     await session.start();
     const { peer_connection_id }: any = await session.createPeerConnection({
       name: PEER_CONNECTION_NAME,
+      peerConnectionId: '1',
     });
     const offer = await session.createOffer({ peer_connection_id });
     const options = {
@@ -82,6 +84,7 @@ describe('Session', () => {
     await session.start();
     const { peer_connection_id }: any = await session.createPeerConnection({
       name: PEER_CONNECTION_NAME,
+      peerConnectionId: '1',
     });
     const offer = await session.createOffer({ peer_connection_id });
 
@@ -93,6 +96,7 @@ describe('Session', () => {
     await session.start();
     const { peer_connection_id }: any = await session.createPeerConnection({
       name: PEER_CONNECTION_NAME,
+      peerConnectionId: '1',
     });
     const offer = await session.createOffer({ peer_connection_id });
     const options = {
@@ -109,6 +113,7 @@ describe('Session', () => {
     await session.start();
     const { peer_connection_id }: any = await session.createPeerConnection({
       name: PEER_CONNECTION_NAME,
+      peerConnectionId: '1',
     });
     await expect(
       session.addTrack({
@@ -124,6 +129,7 @@ describe('Session', () => {
     await session.start();
     const { peer_connection_id }: any = await session.createPeerConnection({
       name: PEER_CONNECTION_NAME,
+      peerConnectionId: '1',
     });
     await expect(
       session.addTransceiver({

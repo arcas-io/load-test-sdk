@@ -13,12 +13,8 @@ let TEST_COUNTER_MS = 0;
 const socketConnectCallback = async (device) => {
   for (let i = 0; i < 30; i++) {
     const peerConnectionName = `Peer Connection ${i + 1}`;
-    const { peer_connection_id } = await session.createPeerConnection({
-      name: peerConnectionName,
-    });
     console.log('new peer connection: ', peerConnectionName);
-
-    await createTransport(device, peer_connection_id);
+    await createTransport(device);
   }
 
   const interval = setInterval(async () => {
