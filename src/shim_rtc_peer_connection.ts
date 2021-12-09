@@ -188,7 +188,7 @@ export class ShimRTCPeerConnection {
   }
 
   async createOffer(_options?: RTCOfferAnswerOptions): Promise<any> {
-    console.log('ShimRTCPeerConnection::createOffer()');
+    // console.log('ShimRTCPeerConnection::createOffer()');
     return this.queue.queue_call(async () => {
       let offer;
       try {
@@ -225,7 +225,6 @@ export class ShimRTCPeerConnection {
   }
 
   getTransceivers(): RTCRtpTransceiver[] {
-    console.log('xfoo hit', this.#transceivers);
     return this.#transceivers;
   }
 
@@ -251,7 +250,7 @@ export class ShimRTCPeerConnection {
 
     this.localDescription = description as RTCSessionDescription;
     return this.queue.queue_call(async () => {
-      console.log('ShimRTCPeerConnection::setLocalDescription()');
+      // console.log('ShimRTCPeerConnection::setLocalDescription()');
 
       try {
         const options = {

@@ -26,7 +26,7 @@ export async function provider(uri, callback) {
 
   // upon connection to the SFU, begin loading the device
   socket.on('connect', async () => {
-    console.log('MediaSoup: connected to SFU websocket');
+    // console.log('MediaSoup: connected to SFU websocket');
     const rtpCapabilities = await socketRequest('getRouterRtpCapabilities');
     device = await loadDevice(rtpCapabilities);
 
@@ -53,7 +53,7 @@ export async function provider(uri, callback) {
 }
 
 export async function createTransport(device) {
-  console.log('MediaSoup: send to socket: createProducerTransport');
+  // console.log('MediaSoup: send to socket: createProducerTransport');
   let producerId = v4();
   const data: any = await socketRequest('createProducerTransport', {
     id: producerId,
@@ -68,7 +68,7 @@ export async function createTransport(device) {
   const transport = device.createSendTransport(data);
 
   transport.on('connect', async ({ dtlsParameters }, callback, errback) => {
-    console.log('MediaSoup: send to socket: connectProducerTransport');
+    // console.log('MediaSoup: send to socket: connectProducerTransport');
     socketRequest('connectProducerTransport', { dtlsParameters, id: producerId })
       .then(callback)
       .catch(errback);
