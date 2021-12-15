@@ -5,7 +5,6 @@ import type { MethodDefinition } from '@grpc/proto-loader'
 import type { AddTrackRequest as _webrtc_AddTrackRequest, AddTrackRequest__Output as _webrtc_AddTrackRequest__Output } from '../webrtc/AddTrackRequest';
 import type { AddTransceiverRequest as _webrtc_AddTransceiverRequest, AddTransceiverRequest__Output as _webrtc_AddTransceiverRequest__Output } from '../webrtc/AddTransceiverRequest';
 import type { CreatePeerConnectionRequest as _webrtc_CreatePeerConnectionRequest, CreatePeerConnectionRequest__Output as _webrtc_CreatePeerConnectionRequest__Output } from '../webrtc/CreatePeerConnectionRequest';
-import type { CreatePeerConnectionResponse as _webrtc_CreatePeerConnectionResponse, CreatePeerConnectionResponse__Output as _webrtc_CreatePeerConnectionResponse__Output } from '../webrtc/CreatePeerConnectionResponse';
 import type { CreateSDPRequest as _webrtc_CreateSDPRequest, CreateSDPRequest__Output as _webrtc_CreateSDPRequest__Output } from '../webrtc/CreateSDPRequest';
 import type { CreateSDPResponse as _webrtc_CreateSDPResponse, CreateSDPResponse__Output as _webrtc_CreateSDPResponse__Output } from '../webrtc/CreateSDPResponse';
 import type { CreateSessionRequest as _webrtc_CreateSessionRequest, CreateSessionRequest__Output as _webrtc_CreateSessionRequest__Output } from '../webrtc/CreateSessionRequest';
@@ -59,14 +58,14 @@ export interface WebRtcClient extends grpc.Client {
   createOffer(argument: _webrtc_CreateSDPRequest, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_CreateSDPResponse__Output) => void): grpc.ClientUnaryCall;
   createOffer(argument: _webrtc_CreateSDPRequest, callback: (error?: grpc.ServiceError, result?: _webrtc_CreateSDPResponse__Output) => void): grpc.ClientUnaryCall;
   
-  CreatePeerConnection(argument: _webrtc_CreatePeerConnectionRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_CreatePeerConnectionResponse__Output) => void): grpc.ClientUnaryCall;
-  CreatePeerConnection(argument: _webrtc_CreatePeerConnectionRequest, metadata: grpc.Metadata, callback: (error?: grpc.ServiceError, result?: _webrtc_CreatePeerConnectionResponse__Output) => void): grpc.ClientUnaryCall;
-  CreatePeerConnection(argument: _webrtc_CreatePeerConnectionRequest, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_CreatePeerConnectionResponse__Output) => void): grpc.ClientUnaryCall;
-  CreatePeerConnection(argument: _webrtc_CreatePeerConnectionRequest, callback: (error?: grpc.ServiceError, result?: _webrtc_CreatePeerConnectionResponse__Output) => void): grpc.ClientUnaryCall;
-  createPeerConnection(argument: _webrtc_CreatePeerConnectionRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_CreatePeerConnectionResponse__Output) => void): grpc.ClientUnaryCall;
-  createPeerConnection(argument: _webrtc_CreatePeerConnectionRequest, metadata: grpc.Metadata, callback: (error?: grpc.ServiceError, result?: _webrtc_CreatePeerConnectionResponse__Output) => void): grpc.ClientUnaryCall;
-  createPeerConnection(argument: _webrtc_CreatePeerConnectionRequest, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_CreatePeerConnectionResponse__Output) => void): grpc.ClientUnaryCall;
-  createPeerConnection(argument: _webrtc_CreatePeerConnectionRequest, callback: (error?: grpc.ServiceError, result?: _webrtc_CreatePeerConnectionResponse__Output) => void): grpc.ClientUnaryCall;
+  CreatePeerConnection(argument: _webrtc_CreatePeerConnectionRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_Empty__Output) => void): grpc.ClientUnaryCall;
+  CreatePeerConnection(argument: _webrtc_CreatePeerConnectionRequest, metadata: grpc.Metadata, callback: (error?: grpc.ServiceError, result?: _webrtc_Empty__Output) => void): grpc.ClientUnaryCall;
+  CreatePeerConnection(argument: _webrtc_CreatePeerConnectionRequest, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_Empty__Output) => void): grpc.ClientUnaryCall;
+  CreatePeerConnection(argument: _webrtc_CreatePeerConnectionRequest, callback: (error?: grpc.ServiceError, result?: _webrtc_Empty__Output) => void): grpc.ClientUnaryCall;
+  createPeerConnection(argument: _webrtc_CreatePeerConnectionRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_Empty__Output) => void): grpc.ClientUnaryCall;
+  createPeerConnection(argument: _webrtc_CreatePeerConnectionRequest, metadata: grpc.Metadata, callback: (error?: grpc.ServiceError, result?: _webrtc_Empty__Output) => void): grpc.ClientUnaryCall;
+  createPeerConnection(argument: _webrtc_CreatePeerConnectionRequest, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_Empty__Output) => void): grpc.ClientUnaryCall;
+  createPeerConnection(argument: _webrtc_CreatePeerConnectionRequest, callback: (error?: grpc.ServiceError, result?: _webrtc_Empty__Output) => void): grpc.ClientUnaryCall;
   
   CreateSession(argument: _webrtc_CreateSessionRequest, metadata: grpc.Metadata, options: grpc.CallOptions, callback: (error?: grpc.ServiceError, result?: _webrtc_CreateSessionResponse__Output) => void): grpc.ClientUnaryCall;
   CreateSession(argument: _webrtc_CreateSessionRequest, metadata: grpc.Metadata, callback: (error?: grpc.ServiceError, result?: _webrtc_CreateSessionResponse__Output) => void): grpc.ClientUnaryCall;
@@ -147,7 +146,7 @@ export interface WebRtcHandlers extends grpc.UntypedServiceImplementation {
   
   CreateOffer: grpc.handleUnaryCall<_webrtc_CreateSDPRequest__Output, _webrtc_CreateSDPResponse>;
   
-  CreatePeerConnection: grpc.handleUnaryCall<_webrtc_CreatePeerConnectionRequest__Output, _webrtc_CreatePeerConnectionResponse>;
+  CreatePeerConnection: grpc.handleUnaryCall<_webrtc_CreatePeerConnectionRequest__Output, _webrtc_Empty>;
   
   CreateSession: grpc.handleUnaryCall<_webrtc_CreateSessionRequest__Output, _webrtc_CreateSessionResponse>;
   
@@ -172,7 +171,7 @@ export interface WebRtcDefinition extends grpc.ServiceDefinition {
   AddTransceiver: MethodDefinition<_webrtc_AddTransceiverRequest, _webrtc_Empty, _webrtc_AddTransceiverRequest__Output, _webrtc_Empty__Output>
   CreateAnswer: MethodDefinition<_webrtc_CreateSDPRequest, _webrtc_CreateSDPResponse, _webrtc_CreateSDPRequest__Output, _webrtc_CreateSDPResponse__Output>
   CreateOffer: MethodDefinition<_webrtc_CreateSDPRequest, _webrtc_CreateSDPResponse, _webrtc_CreateSDPRequest__Output, _webrtc_CreateSDPResponse__Output>
-  CreatePeerConnection: MethodDefinition<_webrtc_CreatePeerConnectionRequest, _webrtc_CreatePeerConnectionResponse, _webrtc_CreatePeerConnectionRequest__Output, _webrtc_CreatePeerConnectionResponse__Output>
+  CreatePeerConnection: MethodDefinition<_webrtc_CreatePeerConnectionRequest, _webrtc_Empty, _webrtc_CreatePeerConnectionRequest__Output, _webrtc_Empty__Output>
   CreateSession: MethodDefinition<_webrtc_CreateSessionRequest, _webrtc_CreateSessionResponse, _webrtc_CreateSessionRequest__Output, _webrtc_CreateSessionResponse__Output>
   GetStats: MethodDefinition<_webrtc_GetStatsRequest, _webrtc_GetStatsResponse, _webrtc_GetStatsRequest__Output, _webrtc_GetStatsResponse__Output>
   GetTransceivers: MethodDefinition<_webrtc_GetTransceiversRequest, _webrtc_GetTransceiversResponse, _webrtc_GetTransceiversRequest__Output, _webrtc_GetTransceiversResponse__Output>

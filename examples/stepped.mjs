@@ -5,6 +5,7 @@ const PEER_CONNECTIONS_PER_STEP = 500;
 const PAUSE_BETWEEN_STEP_MS = 10000; // 2 minutes
 const NUM_STEPS = 10;
 const SOCKET_URI = process.env.SOCKET_URI || 'https://127.0.0.1:3000';
+const PROTO_PATH = './../../rust/server/proto/webrtc.proto';
 
 const timer = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -15,8 +16,9 @@ const socketConnectCallback = async (device) => {
     console.log(`starting step ${step}`);
 
     for (let i = 0; i < PEER_CONNECTIONS_PER_STEP; i++) {
-      const peerConnectionName = `Peer Connection ${step * PEER_CONNECTIONS_PER_STEP + i + 1
-        }`;
+      const peerConnectionName = `Peer Connection ${
+        step * PEER_CONNECTIONS_PER_STEP + i + 1
+      }`;
       console.log('start ', i);
       const { peer_connection_id } = await session.createPeerConnection({
         name: peerConnectionName,
@@ -36,7 +38,11 @@ const socketConnectCallback = async (device) => {
   process.exit();
 };
 
-let session = await Session.create({ name: 'First Session', servers: ['[::]:50051'] });
+let session = await Session.create({
+  name: 'First Session',
+  servers: ['[::]:50051'],
+  protoPath: PROTO_PATH,
+});
 console.log(`session created (${session.id}, ${session.name})`);
 
 await session.start();

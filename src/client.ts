@@ -7,7 +7,7 @@ export class Client {
   public clients: { [key: number]: WebRtcClient } = {};
   private current = 0;
 
-  constructor(private servers: string[]) {
+  constructor(private servers: string[], private protoPath: string) {
     this.initClients();
   }
 
@@ -30,8 +30,7 @@ export class Client {
    * @todo make protoPath an env var
    */
   newClient(server: string): WebRtcClient {
-    const protoPath = './../../rust/server/proto/webrtc.proto';
-    const packageDefinition = protoLoader.loadSync(protoPath, {
+    const packageDefinition = protoLoader.loadSync(this.protoPath, {
       keepCase: true,
       longs: String,
       enums: String,

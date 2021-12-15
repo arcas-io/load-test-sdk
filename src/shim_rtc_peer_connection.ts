@@ -2,21 +2,19 @@
 /* tslint-disable */
 
 import { ClientReadableStream } from '@grpc/grpc-js';
-import { nanoid } from 'nanoid';
 import { PeerConnectionObserverMessage__Output } from '../proto/webrtc/PeerConnectionObserverMessage';
 import { Queue } from './queue';
 import { Session } from './session';
 
 class ShimTrack {
-  addEventListener() {
-  }
+  addEventListener() {}
 }
 
 class ShimTransceiver {
   mid: number;
   currentDirection = 'sendrecv';
   direction: string;
-  receiver = { track: new ShimTrack() }
+  receiver = { track: new ShimTrack() };
   sender = {};
 
   constructor(mid: number, direction: string) {
@@ -75,34 +73,42 @@ export class ShimRTCPeerConnection {
     return (global as any).session;
   }
 
-  async startObserving(observer: ClientReadableStream<PeerConnectionObserverMessage__Output>) {
+  async startObserving(
+    observer: ClientReadableStream<PeerConnectionObserverMessage__Output>,
+  ) {
     observer.on('data', (data) => {
       switch (data.event) {
         case 'ice_candidate':
           break;
         case 'video_transceiver':
-          this.#transceivers.push(new ShimTransceiver(data.video_transceiver.mid, data.video_transceiver.direction));
+          this.#transceivers.push(
+            new ShimTransceiver(
+              data.video_transceiver.mid,
+              data.video_transceiver.direction,
+            ),
+          );
           break;
       }
-    })
+    });
   }
 
   constructor(_configuration: RTCConfiguration) {
     this.queue = new Queue();
-    let peerConnectionId = nanoid();
     // Create the peer connection directly on the server...
     this.queue.queue_call(async () => {
       // TODO: Support passing ICE servers... This is important.
-      await this.getSession().createPeerConnection({
-        peerConnectionId,
-        name: 'ShimRTCPeerConnection',
+      let { peer_connection_id } = await this.getSession().createPeerConnection(
+        {
+          name: 'ShimRTCPeerConnection',
+        },
+      );
+      this.peerConnectionId = peer_connection_id;
+
+      let observer = this.getSession().observe({
+        peer_connection_id,
       });
-
-      let observer = this.getSession().observe({ peer_connection_id: peerConnectionId });
       this.startObserving(observer);
-    })
-
-    this.peerConnectionId = peerConnectionId;
+    });
   }
 
   static generateCertificate(
@@ -153,7 +159,10 @@ export class ShimRTCPeerConnection {
         throw e;
       }
     });
-    let transceiver = (new ShimTransceiver(mid, init && init.direction ? init.direction : 'sendrecv') as any);
+    let transceiver = new ShimTransceiver(
+      mid,
+      init && init.direction ? init.direction : 'sendrecv',
+    ) as any;
     this.#transceivers.push(transceiver);
     return transceiver as any;
   }
@@ -166,7 +175,6 @@ export class ShimRTCPeerConnection {
     // console.log('ShimRTCPeerConnection::createAnswer()', options);
 
     return this.queue.queue_call(async () => {
-
       try {
         let answer = await (global as any).session.createAnswer({
           peer_connection_id: this.peerConnectionId,
@@ -247,7 +255,6 @@ export class ShimRTCPeerConnection {
   async setLocalDescription(
     description?: RTCSessionDescriptionInit,
   ): Promise<void> {
-
     this.localDescription = description as RTCSessionDescription;
     return this.queue.queue_call(async () => {
       // console.log('ShimRTCPeerConnection::setLocalDescription()');
@@ -264,7 +271,6 @@ export class ShimRTCPeerConnection {
         throw e;
       }
     });
-
   }
 
   async setRemoteDescription(
@@ -287,7 +293,6 @@ export class ShimRTCPeerConnection {
         throw e;
       }
     });
-
   }
 
   addEventListener<K extends keyof RTCPeerConnectionEventMap>(

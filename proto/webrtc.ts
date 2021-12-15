@@ -17,7 +17,6 @@ export interface ProtoGrpcType {
     AddTrackRequest: MessageTypeDefinition
     AddTransceiverRequest: MessageTypeDefinition
     CreatePeerConnectionRequest: MessageTypeDefinition
-    CreatePeerConnectionResponse: MessageTypeDefinition
     CreateSDPRequest: MessageTypeDefinition
     CreateSDPResponse: MessageTypeDefinition
     CreateSessionRequest: MessageTypeDefinition
@@ -31,8 +30,7 @@ export interface ProtoGrpcType {
     MediaType: EnumTypeDefinition
     ObserverRequest: MessageTypeDefinition
     PeerConnectionObserverMessage: MessageTypeDefinition
-    PeerConnectionStat: MessageTypeDefinition
-    PeerConnectionStats: MessageTypeDefinition
+    PeerConnectionState: MessageTypeDefinition
     SDPType: EnumTypeDefinition
     SessionStats: MessageTypeDefinition
     SetSDPRequest: MessageTypeDefinition

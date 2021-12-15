@@ -5,6 +5,7 @@ const TEST_TIME_MS = 5000000;
 const STATS_INCREMENTS_MS = 5000;
 const SOCKET_URI = 'https://127.0.0.1:3000';
 const SERVERS = ['[::]:50051'];
+const PROTO_PATH = './../../rust/server/proto/webrtc.proto';
 
 let TEST_COUNTER_MS = 0;
 
@@ -32,6 +33,7 @@ const socketConnectCallback = async (device) => {
 const session = await Session.create({
   name: 'First Session',
   servers: SERVERS,
+  protoPath: PROTO_PATH,
 });
 console.log(`session created (${session.id}, ${session.name})`);
 

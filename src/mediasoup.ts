@@ -69,7 +69,10 @@ export async function createTransport(device) {
 
   transport.on('connect', async ({ dtlsParameters }, callback, errback) => {
     // console.log('MediaSoup: send to socket: connectProducerTransport');
-    socketRequest('connectProducerTransport', { dtlsParameters, id: producerId })
+    socketRequest('connectProducerTransport', {
+      dtlsParameters,
+      id: producerId,
+    })
       .then(callback)
       .catch(errback);
   });
@@ -123,10 +126,10 @@ export async function createTransport(device) {
   }
 }
 
-async function getUserMedia(_transport) {
+export async function getUserMedia(_transport) {
   const stream = {
     getVideoTracks: () => [
-      { kind: 'video', id: '', addEventListener: () => { } },
+      { kind: 'video', id: '', addEventListener: () => {} },
     ],
   };
   return stream;

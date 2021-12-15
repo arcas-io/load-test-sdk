@@ -16,19 +16,16 @@ export type PeerConnectionSdp = {
 export class Session {
   public callbacks: Callbacks;
   public client: Client;
-  public id: string;
-  public name: string
   private peerConnections: { [key: string]: PeerConnection } = {};
 
   constructor(
-    id: string,
-    name: string,
+    public id: string,
+    public name: string,
     servers: string[],
+    private protoPath,
   ) {
-    this.id = id;
-    this.name = name;
     this.callbacks = new Callbacks(this);
-    this.client = new Client(servers);
+    this.client = new Client(servers, this.protoPath);
   }
 
   /**
@@ -39,9 +36,15 @@ export class Session {
   static async create(options: {
     name: string;
     servers: string[];
+    protoPath: string;
   }): Promise<Session> {
     const sessionId = nanoid();
-    const session = new Session(sessionId, options.name, options.servers);
+    const session = new Session(
+      sessionId,
+      options.name,
+      options.servers,
+      options.protoPath,
+    );
     setup(session);
 
     for (const index in session.client.clients) {
@@ -94,11 +97,10 @@ export class Session {
    * @returns {Promise<CreatePeerConnectionResponse>}
    */
   async createPeerConnection(options: {
-    peerConnectionId: string,
     name: string;
   }): Promise<{ peer_connection_id: string }> {
-    const { peerConnectionId } = options;
     const client = this.client.nextClient();
+    const peerConnectionId = nanoid();
     this.peerConnections[peerConnectionId] = new PeerConnection(
       peerConnectionId,
       client,
@@ -203,9 +205,9 @@ export class Session {
   }
 
   /**
- * Adds a Transceiver
- * @returns {Promise<void>}
- */
+   * Adds a Transceiver
+   * @returns {Promise<void>}
+   */
   async getTransceivers(options: {
     peer_connection_id: string;
     track_id: string;
@@ -221,5 +223,5 @@ export class Session {
   }): ClientReadableStream<PeerConnectionObserverMessage__Output> {
     const client = this.peerConnections[options.peer_connection_id].client;
     return client.observer({ session_id: this.id, ...options } as any);
-  };
+  }
 }
