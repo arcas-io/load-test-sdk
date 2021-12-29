@@ -30,7 +30,10 @@ export class Client {
    * @todo make protoPath an env var
    */
   newClient(server: string): WebRtcClient {
-    const packageDefinition = protoLoader.loadSync(this.protoPath, {
+    /* eslint-disable */
+    const protoFile =
+      require('path').resolve(__dirname, './../') + this.protoPath;
+    const packageDefinition = protoLoader.loadSync(protoFile, {
       keepCase: true,
       longs: String,
       enums: String,
