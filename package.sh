@@ -1,7 +1,7 @@
 #!/bin/bash
 
 RELEASE="release"
-PROTO_PATH="proto"
+PROTO_PATH="../../rust/server/proto"
 
 # yarn autogen
 # yarn build
