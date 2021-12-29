@@ -30,3 +30,6 @@ build/
 
 # Gathertown
 src/gathertown
+
+bin
+release

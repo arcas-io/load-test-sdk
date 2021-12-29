@@ -1,7 +1,7 @@
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
-import { ProtoGrpcType } from './../proto/webrtc';
-import { WebRtcClient } from './../proto/webrtc/WebRtc';
+import { ProtoGrpcType } from './../proto_ts/webrtc';
+import { WebRtcClient } from './../proto_ts/webrtc/WebRtc';
 
 export class Client {
   public clients: { [key: number]: WebRtcClient } = {};

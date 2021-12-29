@@ -5,7 +5,7 @@ import { PeerConnection } from './peerConnection';
 import { Callbacks } from './callbacks';
 import { setup } from './shim_rtc_peer_connection';
 import { ClientReadableStream } from '@grpc/grpc-js';
-import { PeerConnectionObserverMessage__Output } from '../proto/webrtc/PeerConnectionObserverMessage';
+import { PeerConnectionObserverMessage__Output } from '../proto_ts/webrtc/PeerConnectionObserverMessage';
 
 export type PeerConnectionSdp = {
   peer_connection_id: string;
