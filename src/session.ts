@@ -56,6 +56,7 @@ export class Session {
         session_id: sessionId,
         servers: options.servers,
         polling_state_s: options.pollingStateS,
+        log_level: options.logLevel.toUpperCase(),
       });
     }
 

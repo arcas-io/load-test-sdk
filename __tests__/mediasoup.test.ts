@@ -42,6 +42,8 @@ describe.skip('media soup works', () => {
     initialGlobal = global;
     const session = await Session.create({
       name: 'mediasoup test',
+      pollingStateS: 1,
+      logLevel: 'None',
       servers: SERVERS,
       protoPath: PROTO_PATH,
     });

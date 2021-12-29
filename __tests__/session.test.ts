@@ -8,6 +8,8 @@ const SERVERS = ['[::]:50051'];
 async function newSession(): Promise<Session> {
   return await Session.create({
     name: SESSION_NAME,
+    pollingStateS: 1,
+    logLevel: 'None',
     servers: SERVERS,
     protoPath: PROTO_PATH,
   });
