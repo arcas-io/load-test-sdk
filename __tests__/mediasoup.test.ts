@@ -5,6 +5,7 @@ import { Device } from 'mediasoup-client';
 // TODO: mock mediasoup server
 
 const SOCKET_URI = 'https://127.0.0.1:3000';
+const PROTO_PATH = './../../rust/server/proto/webrtc.proto';
 const SERVERS = ['[::]:50051', '[::]:50052'];
 const routerRtpCapabilities = {
   codecs: [
@@ -42,6 +43,7 @@ describe.skip('media soup works', () => {
     const session = await Session.create({
       name: 'mediasoup test',
       servers: SERVERS,
+      protoPath: PROTO_PATH,
     });
     await session.start();
     const callback = (_device: any) => console.log('device ready');
