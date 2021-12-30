@@ -5,7 +5,7 @@ import { PeerConnection } from './peerConnection';
 import { Callbacks } from './callbacks';
 import { setup } from './shim_rtc_peer_connection';
 import { ClientReadableStream } from '@grpc/grpc-js';
-import { PeerConnectionObserverMessage__Output } from '../proto/webrtc/PeerConnectionObserverMessage';
+import { PeerConnectionObserverMessage__Output } from '../proto_ts/webrtc/PeerConnectionObserverMessage';
 
 export type PeerConnectionSdp = {
   peer_connection_id: string;
@@ -21,11 +21,11 @@ export class Session {
   constructor(
     public id: string,
     public name: string,
-    servers: string[],
+    private servers: string[],
     private protoPath,
   ) {
     this.callbacks = new Callbacks(this);
-    this.client = new Client(servers, this.protoPath);
+    this.client = new Client(this.servers, this.protoPath);
   }
 
   /**
@@ -35,6 +35,8 @@ export class Session {
    */
   static async create(options: {
     name: string;
+    pollingStateS: number;
+    logLevel: string;
     servers: string[];
     protoPath: string;
   }): Promise<Session> {
@@ -50,7 +52,12 @@ export class Session {
     for (const index in session.client.clients) {
       const client = session.client.clients[index];
       const createSession = promisify(client.createSession).bind(client);
-      await createSession({ session_id: sessionId, ...options });
+      await createSession({
+        session_id: sessionId,
+        servers: options.servers,
+        polling_state_s: options.pollingStateS,
+        log_level: options.logLevel.toUpperCase(),
+      });
     }
 
     return session;

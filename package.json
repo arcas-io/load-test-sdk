@@ -1,7 +1,7 @@
 {
   "name": "@arcas/sdk",
-  "main": "./build/src/index.js",
-  "version": "0.1.0",
+  "main": "./src/index.js",
+  "version": "0.1.1",
   "license": "MIT",
   "engines": {
     "node": ">= 14.16 <18"
@@ -25,13 +25,13 @@
     "start": "node build/src/main.js",
     "clean": "rimraf coverage build tmp",
     "prebuild": "yarn lint",
-    "build": "tsc -p tsconfig.release.json",
+    "build": "rm -rf build && tsc -p tsconfig.release.json",
     "build:watch": "tsc -w -p tsconfig.release.json",
     "lint": "eslint . --ext .ts,.tsx",
     "test": "jest",
     "test-coverage": "jest --coverage",
     "test:watch": "jest --watch --verbose",
-    "autogen": "./node_modules/.bin/proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=proto/ ./../../rust/server/proto/*.proto",
+    "autogen": "./node_modules/.bin/proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=proto_ts/ ./../../rust/server/proto/*.proto && cp -R ./../../rust/server/proto proto",
     "postinstall": "node downloader.js"
   },
   "dependencies": {
@@ -50,5 +50,8 @@
     "tslib": "~2.3.1",
     "uuid": "^8.3.2",
     "zod": "^3.11.6"
+  },
+  "bin": {
+    "arcas": "./bin/arcas"
   }
 }

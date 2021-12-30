@@ -1,7 +1,7 @@
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
-import { ProtoGrpcType } from './../proto/webrtc';
-import { WebRtcClient } from './../proto/webrtc/WebRtc';
+import { ProtoGrpcType } from './../proto_ts/webrtc';
+import { WebRtcClient } from './../proto_ts/webrtc/WebRtc';
 
 export class Client {
   public clients: { [key: number]: WebRtcClient } = {};
@@ -30,7 +30,10 @@ export class Client {
    * @todo make protoPath an env var
    */
   newClient(server: string): WebRtcClient {
-    const packageDefinition = protoLoader.loadSync(this.protoPath, {
+    /* eslint-disable */
+    const protoFile =
+      require('path').resolve(__dirname, './../') + this.protoPath;
+    const packageDefinition = protoLoader.loadSync(protoFile, {
       keepCase: true,
       longs: String,
       enums: String,

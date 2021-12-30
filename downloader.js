@@ -4,8 +4,10 @@ const zlib = require('zlib');
 const Downloader = require('nodejs-file-downloader');
 const { pipeline } = require('stream');
 
-const BASE_URL = 'https://storage.googleapis.com/libwebrtc-dev/arcas-load-server/';
-const DEST_PATH = __dirname + '/node_modules/.bin/';
+const BASE_URL =
+  'https://storage.googleapis.com/libwebrtc-dev/arcas-load-server/';
+const DEST_PATH = __dirname + '/bin/';
+const NODE_DEST_PATH = __dirname + '/../../.bin/';
 const REVISION = fs.readFileSync('./REVISION', 'utf8').trim();
 
 fs.mkdirSync(DEST_PATH, { recursive: true });
@@ -46,8 +48,7 @@ const download = new Downloader({
   onProgress: function (percentage, chunk, remainingSize) {
     bar.update(parseFloat(percentage));
   },
-})
-
+});
 
 async function main() {
   try {
@@ -56,20 +57,19 @@ async function main() {
     bar.start(100, 0);
     await download.download();
     fs.chmodSync(`${DEST_PATH}/arcas`, 0755);
-
+    fs.copyFile(`${DEST_PATH}/arcas`, `${NODE_DEST_PATH}/arcas`, () => {});
   } catch (e) {
     console.error();
     console.error(
-      `Failed to download Arcas load server from ${BASE_URL}${downloadStr} . Please report this as an issue/bug to the Aracs team.`
-
-    )
+      `Failed to download Arcas load server from ${BASE_URL}${downloadStr} . Please report this as an issue/bug to the Aracs team.`,
+    );
     console.error(e);
   } finally {
     bar.stop();
   }
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error(err);
   process.exit(1);
-})
+});

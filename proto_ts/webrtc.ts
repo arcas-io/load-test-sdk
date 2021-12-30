@@ -27,6 +27,7 @@ export interface ProtoGrpcType {
     GetTransceiversRequest: MessageTypeDefinition
     GetTransceiversResponse: MessageTypeDefinition
     IceCandidate: MessageTypeDefinition
+    LogLevel: EnumTypeDefinition
     MediaType: EnumTypeDefinition
     ObserverRequest: MessageTypeDefinition
     PeerConnectionObserverMessage: MessageTypeDefinition
