@@ -1,4 +1,4 @@
-import { WebRtcClient } from './../proto/webrtc/WebRtc';
+import { WebRtcClient } from './../proto_ts/webrtc/WebRtc';
 
 export class PeerConnection {
   constructor(public id: string, public client: WebRtcClient) {}

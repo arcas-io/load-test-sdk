@@ -2,7 +2,7 @@
 /* tslint-disable */
 
 import { ClientReadableStream } from '@grpc/grpc-js';
-import { PeerConnectionObserverMessage__Output } from '../proto/webrtc/PeerConnectionObserverMessage';
+import { PeerConnectionObserverMessage__Output } from '../proto_ts/webrtc/PeerConnectionObserverMessage';
 import { Queue } from './queue';
 import { Session } from './session';
 
