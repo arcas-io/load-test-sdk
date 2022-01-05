@@ -2,6 +2,9 @@
 
 RELEASE="release"
 PROTO_PATH="../../rust/server/proto"
+PACKAGE_VERSION=$(node -pe "require('./package.json').version")
+TAG=${1:-$PACKAGE_VERSION}
+FILE_NAME="arcas-sdk-${TAG}.tgz"
 
 # yarn autogen
 # yarn build
@@ -14,9 +17,9 @@ cp -R downloader.js ${RELEASE}/downloader.js
 cp -R REVISION ${RELEASE}/REVISION
 cp -R ${PROTO_PATH} ${RELEASE}/proto
 
-PACKAGE_VERSION=$(node -pe "require('./package.json').version")
-FILE_NAME="arcas-sdk-${PACKAGE_VERSION}.tgz"
 
 tar -czf ${FILE_NAME} -C ${RELEASE} .
 rm -rf ${RELEASE}/*
 mv ${FILE_NAME} ${RELEASE}/${FILE_NAME}
+
+echo ${FILE_NAME}
