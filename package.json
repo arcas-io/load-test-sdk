@@ -31,7 +31,7 @@
     "test": "jest",
     "test-coverage": "jest --coverage",
     "test:watch": "jest --watch --verbose",
-    "autogen": "./node_modules/.bin/proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=proto_ts/ ./../../rust/server/proto/*.proto && cp -R ./../../rust/server/proto proto",
+    "autogen": "./node_modules/.bin/proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=proto_ts/ ./../../rust/server/proto/*.proto && cp -R ./../../rust/server/proto .",
     "postinstall": "node downloader.js"
   },
   "dependencies": {
