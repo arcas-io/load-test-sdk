@@ -6,11 +6,10 @@ PACKAGE_VERSION=$(node -pe "require('./package.json').version")
 TAG=${1:-$PACKAGE_VERSION}
 FILE_NAME="arcas-sdk-${TAG}.tgz"
 
-# yarn autogen
-# yarn build
+yarn autogen
+yarn build
 rm -rf ${RELEASE}
 mkdir ${RELEASE} && mkdir ${RELEASE}/bin
-# yarn download && cp bin/arcas ${RELEASE}/bin/arcas
 cp -R build/. ${RELEASE}
 cp -R package.json ${RELEASE}/package.json
 cp -R downloader.js ${RELEASE}/downloader.js
