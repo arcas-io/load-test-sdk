@@ -1,11 +1,32 @@
 import { Session } from './../build/src/main.js';
 import { provider, createTransport } from './../build/src/mediasoup.js';
+import { Scheduler } from './../build/src/scheduler.js'
 
 const TEST_TIME_MS = 5000000;
 const STATS_INCREMENTS_MS = 5000;
 const SOCKET_URI = 'https://127.0.0.1:3000';
-const SERVERS = ['[::]:50051'];
-const PROTO_PATH = './../../rust/server/proto/webrtc.proto';
+const SERVERS = ['[::1]:50051'];
+const PROTO_PATH = './../../../rust/server/proto/webrtc.proto';
+
+// scheduler test
+{
+  const scheduler = new Scheduler('localhost:50061', './../proto/scheduler.proto');
+  await scheduler.schedule({
+    companyId: 'test',
+    sessionId: 'test',
+    userId: 'test',
+    providers: [{
+      provider: 'gcp',
+      regions: [
+        {
+          region: 'test-region',
+          numServers: 3,
+        }
+      ]
+    }]
+  });
+}
+
 
 let TEST_COUNTER_MS = 0;
 
@@ -34,6 +55,8 @@ const session = await Session.create({
   name: 'First Session',
   servers: SERVERS,
   protoPath: PROTO_PATH,
+  logLevel: 'NONE',
+  pollingStateS: 0,
 });
 console.log(`session created (${session.id}, ${session.name})`);
 
