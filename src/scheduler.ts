@@ -3,9 +3,19 @@ import * as protoLoader from '@grpc/proto-loader';
 import { promisify } from 'util';
 import { ProtoGrpcType } from '../proto_ts/scheduler'
 import { SchedulerClient } from '../proto_ts/scheduler/Scheduler'
-import { ScheduleReply } from '../proto_ts/scheduler/ScheduleReply';
-import { ScheduleRequest } from '../proto_ts/scheduler/ScheduleRequest';
 import * as path from 'path'
+
+type ScheduleRequest = {
+    company_id: string;
+    user_id: string;
+    session_id: string;
+    providers: Array<ProviderRequest>
+}
+
+type ProviderRequest = {
+    provider: string;
+    regions: Array<{ region: string; num_servers: string }>
+}
 
 export class Scheduler {
     private readonly client: SchedulerClient;
@@ -25,8 +35,7 @@ export class Scheduler {
     }
 
     public async schedule(request: ScheduleRequest): Promise<Array<string>> {
-        const schedule = promisify(this.client.schedule).bind(this.client);
-        const result: ScheduleReply = await schedule(request);
+        const result = await promisify(this.client.schedule).bind(this.client)(request);
         const endpoints: string[] = [];
         result.providers.forEach(provider => {
             provider.regions.forEach(region => {

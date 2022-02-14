@@ -9,23 +9,25 @@ const SERVERS = ['[::1]:50051'];
 const PROTO_PATH = './../../../rust/server/proto/webrtc.proto';
 
 // scheduler test
-{
-  const scheduler = new Scheduler('localhost:50061', './../proto/scheduler.proto');
-  await scheduler.schedule({
-    companyId: 'test',
-    sessionId: 'test',
-    userId: 'test',
+try {
+  const SCHEDULER_PROTO_PATH = './../../../rust/scheduler/proto/scheduler.proto'
+  const scheduler = new Scheduler('[::1]:50051', SCHEDULER_PROTO_PATH);
+  const endpoints = await scheduler.schedule({
+    company_id: "test",
+    session_id: "test",
+    user_id: "test",
     providers: [{
       provider: 'gcp',
       regions: [
         {
-          region: 'test-region',
-          numServers: 3,
+          region: "test",
+          num_servers: 5,
         }
       ]
     }]
   });
-}
+  console.log(endpoints);
+} catch (e) {}
 
 
 let TEST_COUNTER_MS = 0;
