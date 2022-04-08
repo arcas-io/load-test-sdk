@@ -1,8 +1,8 @@
-import { Session } from './../build/src/main.js';
-import { provider, createTransport } from './../build/src/mediasoup.js';
+import { Session } from '../../build/src/main.js';
+import { provider, createTransport } from '../../build/src/mediasoup.js';
 
 const TEST_TIME_MS = 5000000;
-const STATS_INCREMENTS_MS = 5000;
+const STATS_INCREMENTS_MS = 1000;
 const SOCKET_URI = 'https://127.0.0.1:3000';
 const SERVERS = ['[::1]:50051'];
 const PROTO_PATH = './../proto/webrtc.proto';
@@ -21,6 +21,9 @@ const socketConnectCallback = async (device) => {
   const interval = setInterval(async () => {
     TEST_COUNTER_MS += STATS_INCREMENTS_MS;
 
+    let stats = await session.getStats();
+    console.log(stats);
+
     if (TEST_COUNTER_MS >= TEST_TIME_MS) {
       clearInterval(interval);
       await session.stop();
@@ -35,7 +38,7 @@ const session = await Session.create({
   servers: SERVERS,
   protoPath: PROTO_PATH,
   logLevel: 'NONE',
-  pollingStateS: 0,
+  pollingStateS: 1,
 });
 console.log(`session created (${session.id}, ${session.name})`);
 

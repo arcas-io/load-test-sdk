@@ -42,6 +42,8 @@ let session = await Session.create({
   name: 'First Session',
   servers: ['[::]:50051'],
   protoPath: PROTO_PATH,
+  logLevel: 'NONE',
+  pollingStateS: 1,
 });
 console.log(`session created (${session.id}, ${session.name})`);
 

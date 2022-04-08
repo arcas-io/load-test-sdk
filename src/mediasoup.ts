@@ -31,16 +31,16 @@ export async function provider(uri, callback) {
     device = await loadDevice(rtpCapabilities);
 
     if (device.canProduce('video')) {
-      console.log('MediaSoup: can produce video');
+      // console.log('MediaSoup: can produce video');
     }
 
     callback(device);
   });
 
   socket.on('message', function (event, data) {
-    console.log('MediaSoup: receiving message');
-    console.log(event);
-    console.log(data);
+    // console.log('MediaSoup: receiving message');
+    // console.log(event);
+    // console.log(data);
   });
 
   socket.on('disconnect', (reason) => {
@@ -97,17 +97,17 @@ export async function createTransport(device) {
   transport.on('connectionstatechange', (state) => {
     switch (state) {
       case 'connecting':
-        console.log('MediaSoup: transport::connectionstatechange: connecting');
+        // console.log('MediaSoup: transport::connectionstatechange: connecting');
         break;
 
       case 'connected':
         // document.querySelector("#local_video").srcObject = stream;
-        console.log('MediaSoup: transport::connectionstatechange: connected');
+        // console.log('MediaSoup: transport::connectionstatechange: connected');
         break;
 
       case 'failed':
         transport.close();
-        console.log('MediaSoup: transport::connectionstatechange: failed');
+        // console.log('MediaSoup: transport::connectionstatechange: failed');
         break;
 
       default:
@@ -139,7 +139,7 @@ async function loadDevice(routerRtpCapabilities) {
   try {
     device = new Device();
     await device.load({ routerRtpCapabilities });
-    console.log('de vice', device);
+
     return device;
   } catch (error) {
     if (error.name === 'UnsupportedError') {
