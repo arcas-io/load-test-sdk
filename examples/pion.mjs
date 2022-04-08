@@ -2,11 +2,9 @@ import { Session, setup } from './../build/src/index.js';
 import { JSDOM } from 'jsdom';
 import fetch from 'node-fetch';
 
-
 const URL = 'http://localhost:8080/';
 const SERVERS = ['[::1]:50051'];
-const PROTO_PATH = './../../../rust/server/proto/webrtc.proto';
-
+const PROTO_PATH = './../proto/webrtc.proto';
 
 const session = await Session.create({
   name: 'First Session',
@@ -39,4 +37,3 @@ for (let i = 0; i < 1000; i++) {
   let body = await res.json();
   await pc.setRemoteDescription(body);
 }
-

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 RELEASE="release"
-PROTO_PATH="../../rust/server/proto"
+PROTO_PATH="proto"
 PACKAGE_VERSION=$(node -pe "require('./package.json').version")
 TAG=${1:-$PACKAGE_VERSION}
 FILE_NAME="arcas-sdk-${TAG}.tgz"
