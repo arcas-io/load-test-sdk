@@ -1,5 +1,8 @@
 # Node WebRTC SDK
 
+## Requirements
+Node 14
+
 ## Installation
 ```shell
 yarn
