@@ -1,6 +1,6 @@
-# Arcas Load Test for Gather.town
+# Arcas Load Test as an NPM Module
 
-The Arcas Load Test validates producer and conumer creation and the ability of the SFU to sustain video traffic over a period of time.
+The Arcas Load Test validates producer and consumer (TBD) creation and the ability of the SFU to sustain video traffic over a period of time.
 
 ## Install Dependencies
 A package.json file is included in the package.  Simply run `yarn` to install all dependencies:
