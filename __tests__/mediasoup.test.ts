@@ -5,7 +5,7 @@ import { Device } from 'mediasoup-client';
 // TODO: mock mediasoup server
 
 const SOCKET_URI = 'https://127.0.0.1:3000';
-const PROTO_PATH = './../../rust/server/proto/webrtc.proto';
+const PROTO_PATH = '/proto/webrtc.proto';
 const SERVERS = ['[::]:50051', '[::]:50052'];
 const routerRtpCapabilities = {
   codecs: [

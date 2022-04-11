@@ -1,6 +1,6 @@
 import { Client } from '../src/client';
 
-const PROTO_PATH = './../../rust/server/proto/webrtc.proto';
+const PROTO_PATH = '/proto/webrtc.proto';
 const SERVERS = ['[::]:50051', '[::]:50051', '[::]:50051'];
 
 describe('Client.nextClient function', () => {

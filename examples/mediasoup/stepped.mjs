@@ -5,7 +5,7 @@ const PEER_CONNECTIONS_PER_STEP = 500;
 const PAUSE_BETWEEN_STEP_MS = 10000; // 2 minutes
 const NUM_STEPS = 10;
 const SOCKET_URI = process.env.SOCKET_URI || 'https://127.0.0.1:3000';
-const PROTO_PATH = './../../rust/server/proto/webrtc.proto';
+const PROTO_PATH = './../proto/webrtc.proto';
 
 const timer = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -42,6 +42,8 @@ let session = await Session.create({
   name: 'First Session',
   servers: ['[::]:50051'],
   protoPath: PROTO_PATH,
+  logLevel: 'NONE',
+  pollingStateS: 1,
 });
 console.log(`session created (${session.id}, ${session.name})`);
 

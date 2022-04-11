@@ -1,34 +1,11 @@
-import { Session } from './../build/src/main.js';
-import { provider, createTransport } from './../build/src/mediasoup.js';
-import { Scheduler } from './../build/src/scheduler.js'
+import { Session } from '../../build/src/main.js';
+import { provider, createTransport } from '../../build/src/mediasoup.js';
 
 const TEST_TIME_MS = 5000000;
-const STATS_INCREMENTS_MS = 5000;
+const STATS_INCREMENTS_MS = 1000;
 const SOCKET_URI = 'https://127.0.0.1:3000';
 const SERVERS = ['[::1]:50051'];
-const PROTO_PATH = './../../../rust/server/proto/webrtc.proto';
-
-// scheduler test
-try {
-  const SCHEDULER_PROTO_PATH = './../../../rust/scheduler/proto/scheduler.proto'
-  const scheduler = new Scheduler('[::1]:50051', SCHEDULER_PROTO_PATH);
-  const endpoints = await scheduler.schedule({
-    company_id: "test",
-    session_id: "test",
-    user_id: "test",
-    providers: [{
-      provider: 'gcp',
-      regions: [
-        {
-          region: "test",
-          num_servers: 5,
-        }
-      ]
-    }]
-  });
-  console.log(endpoints);
-} catch (e) {}
-
+const PROTO_PATH = './../proto/webrtc.proto';
 
 let TEST_COUNTER_MS = 0;
 
@@ -44,6 +21,9 @@ const socketConnectCallback = async (device) => {
   const interval = setInterval(async () => {
     TEST_COUNTER_MS += STATS_INCREMENTS_MS;
 
+    let stats = await session.getStats();
+    console.log(stats);
+
     if (TEST_COUNTER_MS >= TEST_TIME_MS) {
       clearInterval(interval);
       await session.stop();
@@ -58,7 +38,7 @@ const session = await Session.create({
   servers: SERVERS,
   protoPath: PROTO_PATH,
   logLevel: 'NONE',
-  pollingStateS: 0,
+  pollingStateS: 1,
 });
 console.log(`session created (${session.id}, ${session.name})`);
 

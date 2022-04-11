@@ -2,7 +2,7 @@ import { Session } from '../src/session';
 
 const SESSION_NAME = 'From Node SDK';
 const PEER_CONNECTION_NAME = 'PC from Node SDK';
-const PROTO_PATH = './../../rust/server/proto/webrtc.proto';
+const PROTO_PATH = '/proto/webrtc.proto';
 const SERVERS = ['[::]:50051'];
 
 async function newSession(): Promise<Session> {
